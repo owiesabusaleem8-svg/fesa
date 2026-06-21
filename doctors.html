@@ -514,6 +514,64 @@ window.onclick = function(event) {
     }
 }
 </script>
+<script>
+    const courses = [
+        { name: "نظم معلومات جغرافية (1)", doc: "د. علي فرغل", link: "#" },
+        { name: "الاستشعار عن بعد", doc: "د. ريم الزيود", link: "#" },
+        { name: "جغرافيا الأردن", doc: "د. فاطمة الطراونة", link: "#" },
+        { name: "مبادئ الخرائط الرقمية", doc: "د. نجلاء حماد", link: "#" },
+        { name: "مادة دراسية 5", doc: "غير محدد", link: "#" },
+        { name: "مادة دراسية 6", doc: "غير محدد", link: "#" },
+        { name: "مادة دراسية 7", doc: "غير محدد", link: "#" },
+        { name: "مادة دراسية 8", doc: "غير محدد", link: "#" },
+        { name: "مادة دراسية 9", doc: "غير محدد", link: "#" },
+        { name: "مادة دراسية 10", doc: "غير محدد", link: "#" },
+        { name: "مادة دراسية 11", doc: "غير محدد", link: "#" },
+        { name: "مادة دراسية 12", doc: "غير محدد", link: "#" },
+        { name: "مادة دراسية 13", doc: "غير محدد", link: "#" },
+        { name: "مادة دراسية 14", doc: "غير محدد", link: "#" },
+        { name: "مادة دراسية 15", doc: "غير محدد", link: "#" },
+        { name: "مادة دراسية 16", doc: "غير محدد", link: "#" },
+        { name: "مادة دراسية 17", doc: "غير محدد", link: "#" },
+        { name: "مادة دراسية 18", doc: "غير محدد", link: "#" },
+        { name: "مادة دراسية 19", doc: "غير محدد", link: "#" },
+        { name: "مادة دراسية 20", doc: "غير محدد", link: "#" },
+        { name: "مادة دراسية 21", doc: "غير محدد", link: "#" },
+        { name: "مادة دراسية 22", doc: "غير محدد", link: "#" },
+        { name: "مادة دراسية 23", doc: "غير محدد", link: "#" },
+        { name: "مادة دراسية 24", doc: "غير محدد", link: "#" },
+        { name: "مادة دراسية 25", doc: "غير محدد", link: "#" },
+        { name: "مادة دراسية 26", doc: "غير محدد", link: "#" },
+        { name: "مادة دراسية 27", doc: "غير محدد", link: "#" },
+        { name: "مادة دراسية 28", doc: "غير محدد", link: "#" },
+        { name: "مادة دراسية 29", doc: "غير محدد", link: "#" },
+        { name: "مادة دراسية 30", doc: "غير محدد", link: "#" },
+        { name: "مادة دراسية 31", doc: "غير محدد", link: "#" },
+        { name: "مادة دراسية 32", doc: "غير محدد", link: "#" },
+        { name: "مادة دراسية 33", doc: "غير محدد", link: "#" },
+        { name: "مادة دراسية 34", doc: "غير محدد", link: "#" },
+        { name: "مادة دراسية 35", doc: "غير محدد", link: "#" },
+        { name: "مادة دراسية 36", doc: "غير محدد", link: "#" },
+        { name: "مادة دراسية 37", doc: "غير محدد", link: "#" },
+        { name: "مادة دراسية 38", doc: "غير محدد", link: "#" },
+        { name: "مادة دراسية 39", doc: "غير محدد", link: "#" },
+        { name: "مادة دراسية 40", doc: "غير محدد", link: "#" }
+    ];
 
+    const coursesList = document.getElementById('coursesList');
+    
+    // هاد الكود بيمشي على القائمة اللي فوق وبيعرضها
+    courses.forEach(course => {
+        coursesList.innerHTML += `
+            <div class="mini-course-item">
+                <div class="mini-course-details">
+                    <h4>${course.name}</h4>
+                    <p>بإشراف: <span class="doc-name-edit">${course.doc}</span></p>
+                </div>
+                <a href="${course.link}" class="btn-mini-download"><i class="fas fa-download"></i> تحميل</a>
+            </div>
+        `;
+    });
+</script>
 </body>
 </html>
