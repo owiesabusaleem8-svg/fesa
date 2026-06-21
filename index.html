@@ -61,6 +61,266 @@
         </div>
     </div>
 </div>
+<div class="ai-chat-container">
+    <div class="ai-chat-window" id="aiChatWindow">
+        <div class="ai-chat-header">
+            <div class="ai-bot-info">
+                <i class="fas fa-robot ai-header-icon"></i>
+                <div>
+                    <h4>مساعد FesaGeo الذكي</h4>
+                    <span>متصل الآن ومستعد لمساعدتك 🧭</span>
+                </div>
+            </div>
+            <button class="ai-close-btn" onclick="toggleAiChat()"><i class="fas fa-times"></i></button>
+        </div>
+        
+        <div class="ai-chat-messages" id="aiChatMessages">
+            <div class="ai-msg bot">
+                مرحباً بك في قسم الجغرافيا ونظم المعلومات! أنا مساعدك الذكي، كيف يمكنني مساعدتك اليوم في تصفح الموقع أو المواد؟ 🗺️✨
+            </div>
+        </div>
+        
+        <div class="ai-chat-input-area">
+            <input type="text" id="aiChatInput" placeholder="اكتب سؤالك هنا..." onkeypress="handleAiKeyPress(event)">
+            <button onclick="sendAiMessage()"><i class="fas fa-paper-plane"></i></button>
+        </div>
+    </div>
 
+    <button class="ai-chat-trigger" onclick="toggleAiChat()" id="aiChatTrigger">
+        <i class="fas fa-robot animate-bounce"></i>
+        <span class="ai-tooltip">اسأل الذكاء الاصطناعي</span>
+    </button>
+</div>
+
+<style>
+.ai-chat-container {
+    position: fixed;
+    bottom: 25px;
+    right: 25px;
+    z-index: 9999;
+    font-family: 'Tajawal', sans-serif;
+    direction: rtl;
+}
+
+/* الزر الدائري */
+.ai-chat-trigger {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #0ea5e9, #00f2ff);
+    border: none;
+    color: #0a192f;
+    font-size: 26px;
+    cursor: pointer;
+    box-shadow: 0 0 20px rgba(0, 242, 255, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+}
+.ai-chat-trigger:hover {
+    transform: scale(1.1) rotate(5deg);
+    box-shadow: 0 0 30px rgba(0, 242, 255, 0.9);
+}
+
+/* التلميح فوق الزر */
+.ai-tooltip {
+    position: absolute;
+    right: 75px;
+    background: rgba(10, 25, 47, 0.9);
+    color: #00f2ff;
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: bold;
+    white-space: nowrap;
+    border: 1px solid rgba(0, 242, 255, 0.3);
+    opacity: 0;
+    pointer-events: none;
+    transition: 0.3s;
+}
+.ai-chat-trigger:hover .ai-tooltip {
+    opacity: 1;
+}
+
+/* نافذة الدردشة الزجاجية */
+.ai-chat-window {
+    position: absolute;
+    bottom: 75px;
+    right: 0;
+    width: 360px;
+    height: 480px;
+    background: rgba(10, 25, 47, 0.95);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border: 1px solid rgba(0, 242, 255, 0.25);
+    border-radius: 20px;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.5);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    transform: translateY(20px) scale(0.95);
+    opacity: 0;
+    pointer-events: none;
+    transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.ai-chat-window.open {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+    pointer-events: auto;
+}
+
+/* الرأس */
+.ai-chat-header {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 15px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.ai-bot-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+.ai-header-icon {
+    font-size: 24px;
+    color: #00f2ff;
+}
+.ai-bot-info h4 {
+    margin: 0;
+    color: #fff;
+    font-size: 14px;
+    font-weight: 700;
+}
+.ai-bot-info span {
+    font-size: 11px;
+    color: #64ffda;
+    display: block;
+    margin-top: 2px;
+}
+.ai-close-btn {
+    background: transparent;
+    border: none;
+    color: #cbd5e1;
+    font-size: 18px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+.ai-close-btn:hover { color: #ef4444; }
+
+/* منطقة الرسائل */
+.ai-chat-messages {
+    flex: 1;
+    padding: 15px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+.ai-msg {
+    max-width: 80%;
+    padding: 10px 14px;
+    border-radius: 15px;
+    font-size: 13px;
+    line-height: 1.5;
+    color: #fff;
+}
+.ai-msg.bot {
+    background: rgba(255, 255, 255, 0.08);
+    align-self: flex-start;
+    border-bottom-right-radius: 4px;
+    border: 1px solid rgba(255,255,255,0.05);
+}
+.ai-msg.user {
+    background: #0ea5e9;
+    align-self: flex-end;
+    border-bottom-left-radius: 4px;
+}
+
+/* منطقة الإدخال */
+.ai-chat-input-area {
+    padding: 12px;
+    background: rgba(0, 0, 0, 0.2);
+    display: flex;
+    gap: 8px;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+.ai-chat-input-area input {
+    flex: 1;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 10px 15px;
+    border-radius: 10px;
+    color: #fff;
+    font-size: 13px;
+    font-family: inherit;
+}
+.ai-chat-input-area input:focus {
+    outline: none;
+    border-color: #00f2ff;
+}
+.ai-chat-input-area button {
+    background: #00f2ff;
+    color: #0a192f;
+    border: none;
+    width: 38px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: 0.2s;
+}
+.ai-chat-input-area button:hover { background: #38bdf8; transform: scale(1.05); }
+
+/* توافق الشاشات للموبايل */
+@media (max-width: 400px) {
+    .ai-chat-window {
+        width: calc(100vw - 40px);
+        right: -10px;
+        height: 420px;
+    }
+    .ai-tooltip { display: none; }
+}
+</style>
+
+<script>
+function toggleAiChat() {
+    const win = document.getElementById('aiChatWindow');
+    win.classList.toggle('open');
+}
+
+function handleAiKeyPress(e) {
+    if (e.key === 'Enter') {
+        sendAiMessage();
+    }
+}
+
+function sendAiMessage() {
+    const input = document.getElementById('aiChatInput');
+    const msgText = input.value.trim();
+    if (!msgText) return;
+
+    const msgContainer = document.getElementById('aiChatMessages');
+
+    // رسالة المستخدم
+    const userDiv = document.createElement('div');
+    userDiv.className = 'ai-msg user';
+    userDiv.innerText = msgText;
+    msgContainer.appendChild(userDiv);
+    input.value = '';
+    msgContainer.scrollTop = msgContainer.scrollHeight;
+
+    // رد تلقائي ذكي مؤقت (لحين ربطه بالـ API لاحقاً)
+    setTimeout(() => {
+        const botDiv = document.createElement('div');
+        botDiv.className = 'ai-msg bot';
+        botDiv.innerText = "أهلاً بك يا بطل! أنا فخور بمساعدتك في قسم الجغرافيا. سأقوم بالإجابة على استفساراتك بشكل كامل قريباً فور إتمام ربط خوادم لوحة التحكم الذكية! 🧭✨";
+        msgContainer.appendChild(botDiv);
+        msgContainer.scrollTop = msgContainer.scrollHeight;
+    }, 800);
+}
+</script>
 </body>
 </html>
