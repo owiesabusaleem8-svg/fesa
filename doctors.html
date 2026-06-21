@@ -513,21 +513,7 @@ window.onclick = function(event) {
         event.target.classList.remove('active');
     }
 }
-    <script>
-        const coursesList = document.getElementById('coursesList');
-        if (coursesList) {
-            for(let i = 1; i <= 40; i++) {
-                coursesList.innerHTML += `
-                    <div class="mini-course-item">
-                        <div class="mini-course-details">
-                            <h4>مادة دراسية ${i}</h4>
-                            <p>بإشراف: د. المشرف</p>
-                        </div>
-                        <a href="#" class="btn-mini-download"><i class="fas fa-download"></i> تحميل</a>
-                    </div>
-                `;
-            }
-        }
-    </script>
+</script>
+
 </body>
 </html>
