@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>الحياة الطلابية والخريجين</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body { background: #050c16; color: white; padding: 40px; font-family: 'Tajawal', sans-serif; }
+        .section-title { color: #00f2ff; margin-bottom: 20px; border-right: 4px solid #00f2ff; padding-right: 15px; }
+        
+        /* معرض الصور */
+        .gallery-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; margin-bottom: 50px; }
+        .gallery-item { border-radius: 10px; overflow: hidden; border: 2px solid #1e293b; height: 200px; }
+        .gallery-item img { width: 100%; height: 100%; object-fit: cover; transition: 0.3s; }
+        .gallery-item img:hover { transform: scale(1.1); }
+
+        /* رسائل الخريجين */
+        .testimonials-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
+        .t-card { background: rgba(255,255,255,0.05); padding: 20px; border-radius: 15px; border: 1px solid #334155; }
+        .t-card h4 { color: #00f2ff; margin: 0; }
+    </style>
+</head>
+<body>
+
+<script>
+    const galleryData = [
+        { img: "https://via.placeholder.com/400", cap: "رحلة العقبة الميدانية" },
+        { img: "https://via.placeholder.com/400", cap: "مختبر نظم المعلومات" },
+        { img: "https://via.placeholder.com/400", cap: "ورشة عمل الطلبة" }
+    ];
+
+    const testimonialsData = [
+        { name: "خالد أحمد", job: "مهندس GIS", msg: "تعلمت في هذا القسم الأساس الصحيح للنجاح في سوق العمل." },
+        { name: "منى خالد", job: "باحثة جغرافية", msg: "الأساتذة كانوا دائماً داعمين لنا في مسيرتنا." }
+    ];
+</script>
+
+<a href="index.html" style="color: #94a3b8;">← العودة للرئيسية</a>
+
+<h2 class="section-title">نشاطاتنا الطلابية</h2>
+<div class="gallery-grid" id="gallery"></div>
+
+<h2 class="section-title">من ذاكرة الخريجين</h2>
+<div class="testimonials-grid" id="testimonials"></div>
+
+<script>
+    const g = document.getElementById('gallery');
+    galleryData.forEach(item => {
+        g.innerHTML += `<div class="gallery-item"><img src="${item.img}" title="${item.cap}"></div>`;
+    });
+
+    const t = document.getElementById('testimonials');
+    testimonialsData.forEach(item => {
+        t.innerHTML += `
+            <div class="t-card">
+                <h4>${item.name}</h4>
+                <small>${item.job}</small>
+                <p>"${item.msg}"</p>
+            </div>
+        `;
+    });
+</script>
+
+</body>
+</html>
