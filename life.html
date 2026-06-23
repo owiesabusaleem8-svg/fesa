@@ -3,66 +3,161 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fesageo - الأنشطة والأرشيف</title>
-    <!-- مكتبات التنسيق والخرائط -->
-    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <link rel="stylesheet" href="style.css"> <!-- تأكد من ربط ملف الـ CSS الخاص بك -->
+    <title>Fesageo - الأنشطة والفعاليات</title>
     <style>
-        body { font-family: 'Tajawal', sans-serif; background-color: #0f172a; color: #cbd5e1; }
-        .activities-container { max-width: 1000px; margin: 40px auto; padding: 20px; }
-        
-        /* تأثيرات الزجاج */
-        .glass-box { 
-            background: rgba(30, 41, 59, 0.6); 
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(56, 189, 248, 0.3);
-            padding: 25px; 
-            border-radius: 20px; 
-            margin-bottom: 30px; 
+        /* تنسيقات عامة للموقع */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7f6;
+            color: #333;
+            margin: 0;
+            padding: 20px;
         }
 
-        .gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 25px; margin-top: 20px; }
-        .gallery-item { height: 250px; background: #0f172a; border: 2px solid transparent; border-radius: 15px; overflow: hidden; transition: 0.4s; position: relative; }
-        .gallery-item:hover { transform: translateY(-10px); border-color: #38bdf8; box-shadow: 0 0 20px rgba(56, 189, 248, 0.4); }
-        .gallery-item img { width: 100%; height: 100%; object-fit: cover; opacity: 0.8; }
-        
-        #map { height: 300px; border-radius: 15px; border: 2px solid #38bdf8; margin-top: 15px; }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 30px;
+        }
+
+        /* تنسيق أزرار التبويب (Tabs) */
+        .tabs-container {
+            display: flex;
+            border-bottom: 2px solid #e0e0e0;
+            margin-bottom: 20px;
+        }
+
+        .tab-button {
+            background: none;
+            border: none;
+            outline: none;
+            padding: 12px 24px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            color: #7f8c8d;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .tab-button:hover {
+            color: #2980b9;
+        }
+
+        /* التبويب النشط */
+        .tab-button.active {
+            color: #2980b9;
+        }
+
+        .tab-button.active::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background-color: #2980b9;
+        }
+
+        /* تنسيق محتوى التبويبات */
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* تأثير ظهور المحتوى */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* تنسيق بطاقات الأنشطة داخل التبويب */
+        .activity-card {
+            background: #fafafa;
+            border-right: 4px solid #2980b9;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 4px;
+        }
+
+        .activity-card h3 {
+            margin-top: 0;
+            color: #2c3e50;
+        }
     </style>
 </head>
 <body>
 
-<div class="activities-container">
-    <h2 style="color: white; text-align: center; margin-bottom: 30px;">أرشيف الأنشطة والفعاليات</h2>
+<div class="container">
+    <h1>أنشطة وفعاليات مشروع Fesageo</h1>
 
-    <!-- قسم الأخبار -->
-    <div class="glass-box">
-        <h3 style="color: #38bdf8;"><i class="fas fa-bolt"></i> تحديثات القسم</h3>
-        <p>📌 رحلة ميدانية لمحمية ضانا - قريباً</p>
-        <p>📢 فتح باب التقديم لمشروع "جغرافي التقني"</p>
+    <!-- شريط التبويبات -->
+    <div class="tabs-container">
+        <button class="tab-button active" onclick="openTab(event, 'tab1')">الأنشطة الحالية</button>
+        <button class="tab-button" onclick="openTab(event, 'tab2')">الفعاليات القادمة</button>
+        <button class="tab-button" onclick="openTab(event, 'tab3')">الأرشيف والتقارير</button>
     </div>
 
-    <!-- معرض الصور -->
-    <div class="gallery-grid">
-        <div class="gallery-item"><img src="image.png" alt="نشاط 1"></div>
-        <div class="gallery-item"><img src="image.png" alt="نشاط 2"></div>
-        <div class="gallery-item"><img src="image.png" alt="نشاط 3"></div>
-        <div class="gallery-item"><img src="image.png" alt="نشاط 4"></div>
+    <!-- محتوى التبويب الأول -->
+    <div id="tab1" class="tab-content active">
+        <div class="activity-card">
+            <h3>النشاط الميداني الأول</h3>
+            <p>هنا يتم كتابة تفاصيل النشاط الجغرافي الحالي، مثل جمع البيانات المساحية أو الدراسات البيئية الحالية.</p>
+        </div>
+        <div class="activity-card">
+            <h3>ورشة عمل الأرك جي آي إس (ArcGIS)</h3>
+            <p>جلسة تطبيقية لتحليل الخرائط الرقمية لطلاب المشروع.</p>
+        </div>
     </div>
 
-    <!-- الخريطة -->
-    <div class="glass-box" style="margin-top: 30px;">
-        <h3 style="color: #38bdf8;"><i class="fas fa-map-marked-alt"></i> الخريطة التفاعلية للأنشطة</h3>
-        <div id="map"></div>
+    <!-- محتوى التبويب الثاني -->
+    <div id="tab2" class="tab-content">
+        <div class="activity-card">
+            <h3>الندوة الافتراضية القادمة</h3>
+            <p>تفاصيل الفعالية القادمة، موعدها، وأبرز المحاور التي سيتم مناقشتها في الجغرافيا التطبيقية.</p>
+        </div>
+    </div>
+
+    <!-- محتوى التبويب الثالث -->
+    <div id="tab3" class="tab-content">
+        <div class="activity-card">
+            <h3>تقرير الفصل الدراسي الأول</h3>
+            <p>ملخص شامل لجميع الأنشطة والمخرجات التي تم تحقيقها سابقاً في المشروع.</p>
+        </div>
     </div>
 </div>
 
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
-    var map = L.map('map').setView([31.95, 35.93], 7);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
-    L.marker([31.95, 35.93]).addTo(map).bindPopup('موقع نشاط طلابي ميداني');
+    function openTab(evt, tabId) {
+        // إخفاء كل محتويات التبويبات
+        const tabContents = document.getElementsByClassName("tab-content");
+        for (let i = 0; i < tabContents.length; i++) {
+            tabContents[i].classList.remove("active");
+        }
+
+        // إزالة الفئة النشطة (active) من كل الأزرار
+        const tabButtons = document.getElementsByClassName("tab-button");
+        for (let i = 0; i < tabButtons.length; i++) {
+            tabButtons[i].classList.remove("active");
+        }
+
+        // إظهار التبويب الحالي وإضافة فئة active للزر الذي تم الضغط عليه
+        document.getElementById(tabId).classList.add("active");
+        evt.currentTarget.classList.add("active");
+    }
 </script>
 
 </body>
