@@ -27,6 +27,84 @@
             background-image: radial-gradient(circle at top, rgba(30, 41, 59, 0.8), var(--bg-dark));
         }
 
+        /* تنسيقات شريط التنقل العلوي الموحد (Navbar) */
+        .header-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--glass-border);
+            position: sticky;
+            top: 0;
+            z-index: 999;
+            padding: 15px 40px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .nav-item {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 1rem;
+            padding: 8px 16px;
+            border-radius: 8px;
+            transition: 0.3s ease;
+        }
+
+        .nav-item:hover {
+            color: var(--neon-blue);
+            background: rgba(56, 189, 248, 0.1);
+        }
+
+        .nav-item.active {
+            color: #0f172a;
+            background: var(--neon-blue);
+            box-shadow: 0 0 10px rgba(56, 189, 248, 0.4);
+        }
+
+        .contact-link {
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+            padding: 8px 16px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: 0.3s;
+        }
+
+        .contact-link:hover {
+            background: white;
+            color: #0f172a;
+        }
+
+        .brand-box {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .site-title {
+            font-size: 1.6rem;
+            font-weight: bold;
+            color: white;
+        }
+
+        .site-title span {
+            color: var(--neon-blue);
+        }
+
+        .logo-img {
+            height: 40px;
+            object-fit: contain;
+        }
+
         .container {
             max-width: 1100px;
             margin: 0 auto;
@@ -49,7 +127,7 @@
             font-size: 1.1rem;
         }
 
-        /* التبويب الرئيسي العلوي */
+        /* التبويب الرئيسي الداخلي */
         .main-nav-tabs {
             display: flex;
             justify-content: center;
@@ -434,12 +512,28 @@
         }
 
         @media (max-width: 768px) {
+            .header-nav { padding: 15px 20px; flex-direction: column; gap: 15px; }
             .doctors-tabs { display: grid; grid-template-columns: 1fr 1fr; }
             .projects-table th, .projects-table td { padding: 10px 6px; font-size: 0.9rem; }
         }
     </style>
 </head>
 <body>
+
+<nav class="header-nav">
+    <div class="nav-links">
+        <a href="index.html" class="nav-item">الرئيسية</a>
+        <a href="acadimc.html" class="nav-item active">البرامج والمشاريع</a>
+        <a href="life.html" class="nav-item">الأنشطة والفعاليات</a> 
+        <a href="https://maps.google.com/?q=Faculty+of+Educational+Sciences+%26+Arts+FESA+UNRWA" target="_blank" class="nav-item">موقع الجامعة (اللوكيشن)</a>
+        <a href="mailto:fesageo@gmail.com" class="contact-link">تواصل معنا</a>
+    </div>
+    
+    <div class="brand-box">
+        <div class="site-title">Fesa<span>geo</span></div>
+        <img src="https://i.ibb.co/Fk3Yy8Qb/image.png" alt="شعار الكلية" class="logo-img">
+    </div>
+</nav>
 
 <div class="container">
     
@@ -457,7 +551,6 @@
         </button>
     </div>
 
-    <!-- تم ضبط وإغلاق وسم هذا القسم والبطاقات بداخله لمنع التداخل الهيكلي -->
     <div id="programs-section" class="page-section active">
         <div class="grid-cards">
             
@@ -546,7 +639,6 @@
 
 </div>
 
-<!-- ==================== هيكل الـ Popup المنبثق ==================== -->
 <div id="projectsPopup" class="popup-overlay" onclick="closePopupOnOverlay(event)">
     <div class="popup-box">
         <button class="popup-close" onclick="closeProjectsPopup()"><i class="fas fa-times"></i></button>
@@ -563,8 +655,7 @@
                     </tr>
                 </thead>
                 <tbody id="popup-table-content">
-                    <!-- سيتم ملء البيانات ديناميكياً -->
-                </tbody>
+                    </tbody>
             </table>
         </div>
     </div>
@@ -594,7 +685,7 @@
                 { name: "تغير غطاء الأرض في عمان باستخدام الاستشعار عن بعد", student: "خالد الفايز", file: "downloads/ali_proj3.zip" },
                 { name: "تقييم جودة المياه الجوفية باستخدام تقنيات IDW", student: "يوسف العلي", file: "downloads/ali_proj4.zip" },
                 { name: "تحديد المواقع المثلى لجمع تجميع مياه الأمطار", student: "عمر المناصير", file: "downloads/ali_proj5.zip" },
-                { name: "تأثير التوسع الحضري على الأراضي الزراعية", student: "سلطان العتيبي", file: "downloads/ali_proj6.zip" },
+                { name: "تأثير التوسع الحضري على الأراضي الزراعية", student: "sلطان العتيبي", file: "downloads/ali_proj6.zip" },
                 { name: "بناء نموذج ثلاثي الأبعاد للمحاضر والمباني الرقمية", student: "حمزة العواملة", file: "downloads/ali_proj7.zip" },
                 { name: "تطبيقات نظم المعلومات الجغرافية في تتبع الأوبئة", student: "بلال المصري", file: "downloads/ali_proj8.zip" },
                 { name: "مراقبة مستويات زحف الرمال باستعمال المركبات الفضائية", student: "فيصل الزعبي", file: "downloads/ali_proj9.zip" },
@@ -632,7 +723,7 @@
                 { name: "استعمل نظم المعلومات الجغرافية في التخطيط الإقليمي", student: "طارق الصرايرة", file: "downloads/fatima_proj3.zip" },
                 { name: "التلوث البصري في المدن وعلاقته بالترتيب الحضري", student: "عبد الله الهلسا", file: "downloads/fatima_proj4.zip" },
                 { name: "ملاءمة الأرض للمطامر الصحية في محافظة الكرك", student: "حمزة النوايسة", file: "downloads/fatima_proj5.zip" },
-                { name: "إدارة الكوارث البيئية والحد من المخاطر الطبيعية", student: "sيف المجالي", file: "downloads/fatima_proj6.zip" },
+                { name: "إدارة الكوارث البيئية والحد من المخاطر الطبيعية", student: "سيف المجالي", file: "downloads/fatima_proj6.zip" },
                 { name: "التحليل المكاني لمواقع التعدين في الفوسفات", student: "معاذ البستنجي", file: "downloads/fatima_proj7.zip" },
                 { name: "جغرافية النقل وتوزيع الخدمات اللوجستية بالجنوب", student: "أسامة القيسي", file: "downloads/fatima_proj8.zip" },
                 { name: "مراقبة التصحر في الحماد الأردني بالاستشعار المباشر", student: "عادل المعايطة", file: "downloads/fatima_proj9.zip" },
