@@ -457,12 +457,13 @@
         </button>
     </div>
 
+    <!-- تم ضبط وإغلاق وسم هذا القسم والبطاقات بداخله لمنع التداخل الهيكلي -->
     <div id="programs-section" class="page-section active">
         <div class="grid-cards">
             
             <div class="glass-card">
                 <div class="card-header">
-                    <h3>...</h3>
+                    <h3>مسار البكالوريوس والخطط</h3>
                     <i class="fas fa-user-graduate"></i>
                 </div>
                 <div class="card-body">
@@ -536,7 +537,6 @@
                 </div>
             </div>
 
-            <!-- تم تحويل الزر هنا لفتح الـ Popup بدلاً من الانتقال لصفحة أخرى -->
             <button id="project-action-link" onclick="openProjectsPopup()" class="action-link-btn">
                 <i class="fas fa-list-ol"></i> استعراض ومحاكاة مشاريع الطلاب
             </button>
@@ -563,7 +563,7 @@
                     </tr>
                 </thead>
                 <tbody id="popup-table-content">
-                    <!-- سيتم ملء البيانات هنا برمجياً بناءً على الدكتور المختار -->
+                    <!-- سيتم ملء البيانات ديناميكياً -->
                 </tbody>
             </table>
         </div>
@@ -571,10 +571,8 @@
 </div>
 
 <script>
-    // المتغير لتتبع المفتاح الحالي للدكتور المختار (الافتراضي هو د. علي)
     let currentDoctorKey = 'ali';
 
-    // 1. التبديل بين التبويبات الرئيسية (البرامج / المشاريع)
     function switchMainTab(targetSection, button) {
         document.querySelectorAll('.main-tab-btn').forEach(btn => btn.classList.remove('active'));
         document.querySelectorAll('.page-section').forEach(sec => sec.classList.remove('active'));
@@ -583,7 +581,6 @@
         document.getElementById(targetSection + '-section').classList.add('active');
     }
 
-    // 2. قاعدة بيانات الدكاترة والـ 10 مشاريع لكل طبيب
     const doctorsData = {
         ali: {
             mainTitle: "قسم المشاريع الخاصة بدكتور علي",
@@ -597,7 +594,7 @@
                 { name: "تغير غطاء الأرض في عمان باستخدام الاستشعار عن بعد", student: "خالد الفايز", file: "downloads/ali_proj3.zip" },
                 { name: "تقييم جودة المياه الجوفية باستخدام تقنيات IDW", student: "يوسف العلي", file: "downloads/ali_proj4.zip" },
                 { name: "تحديد المواقع المثلى لجمع تجميع مياه الأمطار", student: "عمر المناصير", file: "downloads/ali_proj5.zip" },
-                { name: "تأثير التوسع الحضري على الأراضي الزراعية"، student: "سلطان العتيبي", file: "downloads/ali_proj6.zip" },
+                { name: "تأثير التوسع الحضري على الأراضي الزراعية", student: "سلطان العتيبي", file: "downloads/ali_proj6.zip" },
                 { name: "بناء نموذج ثلاثي الأبعاد للمحاضر والمباني الرقمية", student: "حمزة العواملة", file: "downloads/ali_proj7.zip" },
                 { name: "تطبيقات نظم المعلومات الجغرافية في تتبع الأوبئة", student: "بلال المصري", file: "downloads/ali_proj8.zip" },
                 { name: "مراقبة مستويات زحف الرمال باستعمال المركبات الفضائية", student: "فيصل الزعبي", file: "downloads/ali_proj9.zip" },
@@ -632,10 +629,10 @@
             projects: [
                 { name: "النمذجة الهيدرولوجية لحوض وادي الموجب", student: "يزن الطراونة", file: "downloads/fatima_proj1.zip" },
                 { name: "مخاطر الانزلاقات الأرضية على الطرق الصحراوية", student: "مصطفى الضمور", file: "downloads/fatima_proj2.zip" },
-                { name: "استعمال نظم المعلومات الجغرافية في التخطيط الإقليمي", student: "طارق الصرايرة", file: "downloads/fatima_proj3.zip" },
+                { name: "استعمل نظم المعلومات الجغرافية في التخطيط الإقليمي", student: "طارق الصرايرة", file: "downloads/fatima_proj3.zip" },
                 { name: "التلوث البصري في المدن وعلاقته بالترتيب الحضري", student: "عبد الله الهلسا", file: "downloads/fatima_proj4.zip" },
                 { name: "ملاءمة الأرض للمطامر الصحية في محافظة الكرك", student: "حمزة النوايسة", file: "downloads/fatima_proj5.zip" },
-                { name: "إدارة الكوارث البيئية والحد من المخاطر الطبيعية", student: "سيف المجالي", file: "downloads/fatima_proj6.zip" },
+                { name: "إدارة الكوارث البيئية والحد من المخاطر الطبيعية", student: "sيف المجالي", file: "downloads/fatima_proj6.zip" },
                 { name: "التحليل المكاني لمواقع التعدين في الفوسفات", student: "معاذ البستنجي", file: "downloads/fatima_proj7.zip" },
                 { name: "جغرافية النقل وتوزيع الخدمات اللوجستية بالجنوب", student: "أسامة القيسي", file: "downloads/fatima_proj8.zip" },
                 { name: "مراقبة التصحر في الحماد الأردني بالاستشعار المباشر", student: "عادل المعايطة", file: "downloads/fatima_proj9.zip" },
@@ -663,7 +660,6 @@
         }
     };
 
-    // 3. دالة التبديل الديناميكي الفوري بين الدكاترة
     function updateDoctorContent(docKey, button) {
         document.querySelectorAll('.doc-btn').forEach(btn => btn.classList.remove('active'));
         button.classList.add('active');
@@ -675,18 +671,14 @@
         document.getElementById('box-description').innerText = docInfo.desc;
         document.getElementById('box-supervisor').innerText = docInfo.supervisor;
         
-        // حفظ مفتاح الدكتور المختار حالياً للاعتماد عليه عند فتح البوب اب
         currentDoctorKey = docKey;
     }
 
-    // 4. دالة بناء ومحاكاة فتح الـ Popup ديناميكياً
     function openProjectsPopup() {
         const docData = doctorsData[currentDoctorKey];
         
-        // تحديث عنوان الـ Popup
         document.getElementById('popup-title').innerHTML = `<i class="fas fa-file-invoice"></i> ${docData.popupTitle}`;
         
-        // بناء الجدول لـ 10 مشاريع
         let tbodyContent = "";
         docData.projects.forEach(project => {
             tbodyContent += `
@@ -702,19 +694,14 @@
             `;
         });
         
-        // حقن الجدول بالبيانات المخصصة
         document.getElementById('popup-table-content').innerHTML = tbodyContent;
-        
-        // إظهار البوب اب مع الحركة سريعة وسلسة
         document.getElementById('projectsPopup').classList.add('show');
     }
 
-    // 5. دالة إغلاق الـ Popup
     function closeProjectsPopup() {
         document.getElementById('projectsPopup').classList.remove('show');
     }
 
-    // 6. دالة إغلاق الـ Popup عند النقر في المساحة الفارغة خارج الصندوق
     function closePopupOnOverlay(event) {
         if (event.target.id === "projectsPopup") {
             closeProjectsPopup();
