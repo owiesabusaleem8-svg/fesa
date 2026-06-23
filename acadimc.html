@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fesageo - البرامج والمشاريع</title>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --bg-dark: #0f172a;
+            --glass-bg: rgba(30, 41, 59, 0.5);
+            --glass-border: rgba(56, 189, 248, 0.25);
+            --neon-blue: #38bdf8;
+            --neon-green: #10b981;
+            --text-muted: #cbd5e1;
+        }
+
+        body {
+            font-family: 'Tajawal', sans-serif;
+            background-color: var(--bg-dark);
+            color: white;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            background-image: radial-gradient(circle at top, rgba(30, 41, 59, 0.8), var(--bg-dark));
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .header-section {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .header-section h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .header-section p {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+        }
+
+        /* التبويب الرئيسي العلوي */
+        .main-nav-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 40px;
+            background: rgba(30, 41, 59, 0.4);
+            padding: 8px;
+            border-radius: 50px;
+            width: fit-content;
+            margin-left: auto;
+            margin-right: auto;
+            border: 1px solid var(--glass-border);
+        }
+
+        .main-tab-btn {
+            background: transparent;
+            border: none;
+            color: white;
+            padding: 12px 30px;
+            font-size: 1rem;
+            font-weight: bold;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .main-tab-btn.active {
+            background: var(--neon-blue);
+            color: #0f172a;
+            box-shadow: 0 0 15px rgba(56, 189, 248, 0.4);
+        }
+
+        /* أقسام المحتوى الرئيسية */
+        .page-section {
+            display: none;
+        }
+
+        .page-section.active {
+            display: block;
+        }
+
+        /* تصميم البطاقات الثلاث (البرامج والمسارات) */
+        .grid-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+        }
+
+        .glass-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 30px;
+            transition: 0.3s ease;
+        }
+
+        .glass-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--neon-blue);
+            box-shadow: 0 0 20px rgba(56, 189, 248, 0.15);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .card-header h3 {
+            color: white;
+            margin: 0;
+            font-size: 1.4rem;
+        }
+
+        .card-header i {
+            font-size: 1.8rem;
+            color: var(--neon-blue);
+        }
+
+        .card-body ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .card-body li {
+            margin-bottom: 15px;
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            color: var(--text-muted);
+            line-height: 1.6;
+        }
+
+        .card-body li i {
+            color: var(--neon-blue);
+            margin-top: 5px;
+            font-size: 0.9rem;
+        }
+
+        .tech-tags {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .tech-tag {
+            background: rgba(56, 189, 248, 0.1);
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            color: var(--neon-blue);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        /* تصميم معرض المشاريع (الدكاترة) */
+        .doctors-tabs {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 30px;
+        }
+
+        .doc-btn {
+            background: rgba(30, 41, 59, 0.6);
+            border: 1px solid var(--glass-border);
+            color: white;
+            padding: 12px 22px;
+            border-radius: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .doc-btn.active {
+            background: var(--neon-green);
+            color: #0f172a;
+            border-color: var(--neon-green);
+            box-shadow: 0 0 15px rgba(16, 185, 129, 0.4);
+        }
+
+        .project-display-box {
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            border: 2px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 35px;
+            max-width: 850px;
+            margin: 0 auto;
+            transition: 0.3s ease;
+        }
+
+        .box-title-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+
+        .box-title-container h2 {
+            font-size: 1.8rem;
+            margin: 0;
+            color: white;
+        }
+
+        .box-title-container i {
+            font-size: 2rem;
+            color: var(--neon-green);
+        }
+
+        .project-desc-wrapper {
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            background: rgba(15, 23, 42, 0.4);
+            border-radius: 16px;
+            padding: 25px;
+            margin-bottom: 25px;
+        }
+
+        .project-desc-wrapper h3 {
+            color: white;
+            margin-top: 0;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.4rem;
+        }
+
+        .project-desc-wrapper p {
+            color: var(--text-muted);
+            line-height: 1.8;
+            margin: 0;
+            font-size: 1.05rem;
+        }
+
+        .supervisor-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--neon-green);
+            font-weight: bold;
+            margin-top: 20px;
+            font-size: 1.1rem;
+        }
+
+        .action-link-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+            background: var(--neon-green);
+            color: #0f172a;
+            border: none;
+            padding: 15px;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            text-decoration: none;
+            cursor: pointer;
+            transition: 0.3s;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+        }
+
+        .action-link-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+        }
+
+        @media (max-width: 768px) {
+            .doctors-tabs { display: grid; grid-template-columns: 1fr 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    
+    <div class="header-section">
+        <h1>البرامج الأكاديمية والإنتاج المعرفي</h1>
+        <p>بوابتك لاستكشاف التخصص وأقوى مشاريع الخريجين التطبيقية</p>
+    </div>
+
+    <div class="main-nav-tabs">
+        <button class="main-tab-btn active" onclick="switchMainTab('programs', this)">
+            <i class="fas fa-graduation-cap"></i> البرامج والمسارات
+        </button>
+        <button class="main-tab-btn" onclick="switchMainTab('projects', this)">
+            <i class="fas fa-map-marked-alt"></i> معرض المشاريع المميزة
+        </button>
+    </div>
+
+    <div id="programs-section" class="page-section active">
+        <div class="grid-cards">
+            
+            <div class="glass-card">
+                <div class="card-header">
+                    <h3>مسار البكالوريوس والخطط</h3>
+                    <i class="fas fa-user-graduate"></i>
+                </div>
+                <div class="card-body">
+                    <ul>
+                        <li><i class="fas fa-chevron-left"></i> بكالوريوس الجغرافيا ونظم المعلومات: خطة حديثة تدمج بين الجغرافيا التطبيقية والتقنيات المكانية المعاصرة.</li>
+                        <li><i class="fas fa-chevron-left"></i> محاور الدراسة الأساسية: دراسة متعمقة للاستشعار عن بعد، التحليل المكاني، وإدارة البيئة والموارد.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="glass-card">
+                <div class="card-header">
+                    <h3>البرمجيات والأدوات الرقمية (Tech Stack)</h3>
+                    <i class="fas fa-code"></i>
+                </div>
+                <div class="card-body">
+                    <p style="color: var(--text-muted); margin-bottom: 15px;">يتدرب طلبة القسم على أحدث المنظومات البرمجية والمنصات العالمية لجمع وتحليل البيانات الجغرافية بدقة:</p>
+                    <div class="tech-tags">
+                        <span class="tech-tag"><i class="fas fa-layer-group"></i> ArcGIS</span>
+                        <span class="tech-tag"><i class="fas fa-globe"></i> Diva GIS</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="glass-card">
+                <div class="card-header">
+                    <h3>الآفاق المهنية وفرص العمل</h3>
+                    <i class="fas fa-briefcase"></i>
+                </div>
+                <div class="card-body">
+                    <ul>
+                        <li><i class="fas fa-chevron-left"></i> محلل ومطور نظم معلومات جغرافية (GIS Analyst) في القطاعين الحكومي والخاص.</li>
+                        <li><i class="fas fa-chevron-left"></i> أخصائي استشعار عن بعد وتفسير الصور الفضائية والجوية والبيانات الرادارية.</li>
+                    </ul>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div id="projects-section" class="page-section">
+        
+        <div class="doctors-tabs">
+            <button class="doc-btn active" onclick="updateDoctorContent('ali', this)">
+                <i class="fas fa-user-tie"></i> مشاريع د. علي
+            </button>
+            <button class="doc-btn" onclick="updateDoctorContent('reem', this)">
+                <i class="fas fa-user-tie"></i> مشاريع د. ريم
+            </button>
+            <button class="doc-btn" onclick="updateDoctorContent('fatima', this)">
+                <i class="fas fa-user-tie"></i> مشاريع د. فاطمة
+            </button>
+            <button class="doc-btn" onclick="updateDoctorContent('najla', this)">
+                <i class="fas fa-user-tie"></i> مشاريع د. نجلاء
+            </button>
+        </div>
+
+        <div class="project-display-box">
+            <div class="box-title-container">
+                <i class="fas fa-folder-open"></i>
+                <h2 id="box-main-title">قسم المشاريع الخاصة بدكتور علي</h2>
+            </div>
+
+            <div class="project-desc-wrapper">
+                <h3 id="box-sub-title"><i class="fas fa-folder"></i> مشاريع الدكتور علي</h3>
+                <p id="box-description">تضم هذه الصفحة باقة متكاملة من أبحاث تخرج ومشاريع تخرج الطلبة المتميزة في نظم المعلومات الجغرافية والاستشعار عن بعد، والتي تمت جميعها بمتابعة وإشراف مباشر بواسطة الدكتور علي فرغل.</p>
+                
+                <div class="supervisor-info">
+                    <i class="fas fa-laptop-code"></i>
+                    <span id="box-supervisor">المشرف الأكاديمي: د. علي فرغل</span>
+                </div>
+            </div>
+
+            <a id="project-action-link" href="students-ali.html" class="action-link-btn">
+                <i class="fas fa-external-link-alt"></i> الانتقال لصفحة مشاريع الطلاب
+            </a>
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+    // 1. التبديل بين التبويبات الرئيسية (البرامج / المشاريع)
+    function switchMainTab(targetSection, button) {
+        document.querySelectorAll('.main-tab-btn').forEach(btn => btn.classList.remove('active'));
+        document.querySelectorAll('.page-section').forEach(sec => sec.classList.remove('active'));
+        
+        button.classList.add('active');
+        document.getElementById(targetSection + '-section').classList.add('active');
+    }
+
+    // 2. قاعدة بيانات الدكاترة والمشاريع لتحديثها ديناميكياً
+    const doctorsData = {
+        ali: {
+            mainTitle: "قسم المشاريع الخاصة بدكتور علي",
+            subTitle: "مشاريع الدكتور علي",
+            desc: "تضم هذه الصفحة باقة متكاملة من أبحاث تخرج ومشاريع تخرج الطلبة المتميزة في نظم المعلومات الجغرافية والاستشعار عن بعد، والتي تمت جميعها بمتابعة وإشراف مباشر بواسطة الدكتور علي فرغل.",
+            supervisor: "المشرف الأكاديمي: د. علي فرغل",
+            link: "students-ali.html"
+        },
+        reem: {
+            mainTitle: "قسم المشاريع الخاصة بدكتورة ريم",
+            subTitle: "مشاريع الدكتورة ريم",
+            desc: "تضم هذه الصفحة باقة متكاملة من أبحاث تخرج ومشاريع تخرج الطلبة المتميزة في نظم المعلومات الجغرافية والاستشعار عن بعد، والتي تمت جميعها بمتابعة وإشراف مباشر بواسطة الدكتورة ريم الزيود.",
+            supervisor: "المشرفة الأكاديمية: د. ريم الزيود",
+            link: "students-reem.html"
+        },
+        fatima: {
+            mainTitle: "قسم المشاريع الخاصة بدكتورة فاطمة",
+            subTitle: "مشاريع الدكتورة فاطمة",
+            desc: "تضم هذه الصفحة باقة متكاملة من أبحاث تخرج ومشاريع تخرج الطلبة المتميزة في نظم المعلومات الجغرافية والاستشعار عن بعد، والتي تمت جميعها بمتابعة وإشراف مباشر بواسطة الدكتورة فاطمة الطراونة.",
+            supervisor: "المشرفة الأكاديمية: د. فاطمة الطراونة",
+            link: "students-fatima.html"
+        },
+        najla: {
+            mainTitle: "قسم المشاريع الخاصة بدكتورة نجلاء",
+            subTitle: "مشاريع الدكتورة نجلاء",
+            desc: "تضم هذه الصفحة باقة متكاملة من أبحاث تخرج ومشاريع تخرج الطلبة المتميزة في نظم المعلومات الجغرافية والاستشعار عن بعد، والمنبثقة عن مساقات مبادئ الخرائط الرقمية ونظرية الموقع تحت إشراف الدكتورة نجلاء حماد.",
+            supervisor: "المشرفة الأكاديمية: د. نجلاء حماد",
+            link: "students-najla.html"
+        }
+    };
+
+    // 3. دالة التبديل الديناميكي الفوري بين الدكاترة
+    function updateDoctorContent(docKey, button) {
+        // إزالة الفعالية عن الأزرار الأخرى وتفعيل الزر الحالي
+        document.querySelectorAll('.doc-btn').forEach(btn => btn.classList.remove('active'));
+        button.classList.add('active');
+
+        // جلب البيانات بناءً على المفتاح المختار
+        const docInfo = doctorsData[docKey];
+
+        // تحديث النصوص داخل الصندوق الرئيسي بسلاسة
+        document.getElementById('box-main-title').innerText = docInfo.mainTitle;
+        document.getElementById('box-sub-title').innerHTML = `<i class="fas fa-folder"></i> ${docInfo.subTitle}`;
+        document.getElementById('box-description').innerText = docInfo.desc;
+        document.getElementById('box-supervisor').innerText = docInfo.supervisor;
+        
+        // تحديث رابط الزر الأخضر
+        document.getElementById('project-action-link').setAttribute('href', docInfo.link);
+    }
+</script>
+
+</body>
+</html>
