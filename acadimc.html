@@ -284,6 +284,7 @@
             cursor: pointer;
             transition: 0.3s;
             box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+            box-sizing: border-box;
         }
 
         .action-link-btn:hover {
@@ -291,8 +292,150 @@
             box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
         }
 
+        /* ==================== تصميم النافذة المنبثقة (Popup) ==================== */
+        .popup-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(15, 23, 42, 0.75);
+            backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+
+        .popup-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .popup-box {
+            background: rgba(30, 41, 59, 0.85);
+            border: 2px solid var(--glass-border);
+            border-radius: 24px;
+            width: 90%;
+            max-width: 800px;
+            max-height: 85vh;
+            padding: 30px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            transform: scale(0.9);
+            transition: transform 0.3s ease;
+        }
+
+        .popup-overlay.show .popup-box {
+            transform: scale(1);
+        }
+
+        .popup-close {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .popup-close:hover {
+            color: #ef4444;
+        }
+
+        .popup-header {
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .popup-header h2 {
+            margin: 0;
+            font-size: 1.6rem;
+            color: var(--neon-blue);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .popup-body {
+            overflow-y: auto;
+            flex-grow: 1;
+            padding-left: 5px;
+        }
+
+        /* تنسيق جدول المشاريع داخل البوب اب */
+        .projects-table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: right;
+        }
+
+        .projects-table th {
+            background: rgba(15, 23, 42, 0.6);
+            color: white;
+            padding: 12px;
+            font-weight: bold;
+            border-bottom: 2px solid var(--glass-border);
+        }
+
+        .projects-table td {
+            padding: 14px 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            color: var(--text-muted);
+            vertical-align: middle;
+        }
+
+        .projects-table tr:hover td {
+            background: rgba(56, 189, 248, 0.05);
+            color: white;
+        }
+
+        .download-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(56, 189, 248, 0.15);
+            color: var(--neon-blue);
+            border: 1px solid rgba(56, 189, 248, 0.4);
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            text-decoration: none;
+            transition: 0.2s;
+        }
+
+        .download-btn:hover {
+            background: var(--neon-blue);
+            color: #0f172a;
+            box-shadow: 0 0 10px rgba(56, 189, 248, 0.3);
+        }
+
+        /* تخصيص شريط التمرير للجدول */
+        .popup-body::-webkit-scrollbar {
+            width: 6px;
+        }
+        .popup-body::-webkit-scrollbar-track {
+            background: rgba(15, 23, 42, 0.3);
+            border-radius: 10px;
+        }
+        .popup-body::-webkit-scrollbar-thumb {
+            background: var(--glass-border);
+            border-radius: 10px;
+        }
+
         @media (max-width: 768px) {
             .doctors-tabs { display: grid; grid-template-columns: 1fr 1fr; }
+            .projects-table th, .projects-table td { padding: 10px 6px; font-size: 0.9rem; }
         }
     </style>
 </head>
@@ -319,7 +462,7 @@
             
             <div class="glass-card">
                 <div class="card-header">
-                    <h3>مسار البكالوريوس والخطط</h3>
+                    <h3>...</h3>
                     <i class="fas fa-user-graduate"></i>
                 </div>
                 <div class="card-body">
@@ -393,16 +536,44 @@
                 </div>
             </div>
 
-            <a id="project-action-link" href="students-ali.html" class="action-link-btn">
-                <i class="fas fa-external-link-alt"></i> الانتقال لصفحة مشاريع الطلاب
-            </a>
+            <!-- تم تحويل الزر هنا لفتح الـ Popup بدلاً من الانتقال لصفحة أخرى -->
+            <button id="project-action-link" onclick="openProjectsPopup()" class="action-link-btn">
+                <i class="fas fa-list-ol"></i> استعراض ومحاكاة مشاريع الطلاب
+            </button>
         </div>
 
     </div>
 
 </div>
 
+<!-- ==================== هيكل الـ Popup المنبثق ==================== -->
+<div id="projectsPopup" class="popup-overlay" onclick="closePopupOnOverlay(event)">
+    <div class="popup-box">
+        <button class="popup-close" onclick="closeProjectsPopup()"><i class="fas fa-times"></i></button>
+        <div class="popup-header">
+            <h2 id="popup-title"><i class="fas fa-file-invoice"></i> قائمة مشاريع الطلاب</h2>
+        </div>
+        <div class="popup-body">
+            <table class="projects-table">
+                <thead>
+                    <tr>
+                        <th>اسم المشروع</th>
+                        <th>اسم الطالب</th>
+                        <th style="text-align: center;">تحميل الملف</th>
+                    </tr>
+                </thead>
+                <tbody id="popup-table-content">
+                    <!-- سيتم ملء البيانات هنا برمجياً بناءً على الدكتور المختار -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
 <script>
+    // المتغير لتتبع المفتاح الحالي للدكتور المختار (الافتراضي هو د. علي)
+    let currentDoctorKey = 'ali';
+
     // 1. التبديل بين التبويبات الرئيسية (البرامج / المشاريع)
     function switchMainTab(targetSection, button) {
         document.querySelectorAll('.main-tab-btn').forEach(btn => btn.classList.remove('active'));
@@ -412,55 +583,142 @@
         document.getElementById(targetSection + '-section').classList.add('active');
     }
 
-    // 2. قاعدة بيانات الدكاترة والمشاريع لتحديثها ديناميكياً
+    // 2. قاعدة بيانات الدكاترة والـ 10 مشاريع لكل طبيب
     const doctorsData = {
         ali: {
             mainTitle: "قسم المشاريع الخاصة بدكتور علي",
             subTitle: "مشاريع الدكتور علي",
             desc: "تضم هذه الصفحة باقة متكاملة من أبحاث تخرج ومشاريع تخرج الطلبة المتميزة في نظم المعلومات الجغرافية والاستشعار عن بعد، والتي تمت جميعها بمتابعة وإشراف مباشر بواسطة الدكتور علي فرغل.",
             supervisor: "المشرف الأكاديمي: د. علي فرغل",
-            link: "students-ali.html"
+            popupTitle: "مشاريع طلاب الدكتور علي فرغل",
+            projects: [
+                { name: "نمذجة مخاطر السيول الفجائية باستخدام الجيومعلوماتية", student: "أحمد العبادي", file: "downloads/ali_proj1.zip" },
+                { name: "التحليل المكانى لمراكز الرعاية الصحية الأولية", student: "محمد الحنيطي", file: "downloads/ali_proj2.zip" },
+                { name: "تغير غطاء الأرض في عمان باستخدام الاستشعار عن بعد", student: "خالد الفايز", file: "downloads/ali_proj3.zip" },
+                { name: "تقييم جودة المياه الجوفية باستخدام تقنيات IDW", student: "يوسف العلي", file: "downloads/ali_proj4.zip" },
+                { name: "تحديد المواقع المثلى لجمع تجميع مياه الأمطار", student: "عمر المناصير", file: "downloads/ali_proj5.zip" },
+                { name: "تأثير التوسع الحضري على الأراضي الزراعية"، student: "سلطان العتيبي", file: "downloads/ali_proj6.zip" },
+                { name: "بناء نموذج ثلاثي الأبعاد للمحاضر والمباني الرقمية", student: "حمزة العواملة", file: "downloads/ali_proj7.zip" },
+                { name: "تطبيقات نظم المعلومات الجغرافية في تتبع الأوبئة", student: "بلال المصري", file: "downloads/ali_proj8.zip" },
+                { name: "مراقبة مستويات زحف الرمال باستعمال المركبات الفضائية", student: "فيصل الزعبي", file: "downloads/ali_proj9.zip" },
+                { name: "تحليل النطاقات الجغرافية لشبكات النقل السريع", student: "رائد النسور", file: "downloads/ali_proj10.zip" }
+            ]
         },
         reem: {
             mainTitle: "قسم المشاريع الخاصة بدكتورة ريم",
             subTitle: "مشاريع الدكتورة ريم",
             desc: "تضم هذه الصفحة باقة متكاملة من أبحاث تخرج ومشاريع تخرج الطلبة المتميزة في نظم المعلومات الجغرافية والاستشعار عن بعد، والتي تمت جميعها بمتابعة وإشراف مباشر بواسطة الدكتورة ريم الزيود.",
             supervisor: "المشرفة الأكاديمية: د. ريم الزيود",
-            link: "students-reem.html"
+            popupTitle: "مشاريع طلاب الدكتورة ريم الزيود",
+            projects: [
+                { name: "مراقبة الجفاف الزراعي باستعمال معايير NDVI", student: "حلا النسور", file: "downloads/reem_proj1.zip" },
+                { name: "التغير المناخي وأثره على الحصاد المائي بالجنوب", student: "سارة الزعبي", file: "downloads/reem_proj2.zip" },
+                { name: "أطلس خرائط السكان الرقمي لمنطقة الزرقاء", student: "منى الهواري", file: "downloads/reem_proj3.zip" },
+                { name: "استخدام مرئيات لاندسات لربط درجات حرارة الأرض", student: "رنا الخصاونة", file: "downloads/reem_proj4.zip" },
+                { name: "التحليل الإحصائي المكاني لتوزيع المدارس الحكومية", student: "ديما المعايطة", file: "downloads/reem_proj5.zip" },
+                { name: "المؤشرات المورفومترية للأحواض المائية الجافة", student: "أريج الحديد", file: "downloads/reem_proj6.zip" },
+                { name: "تحديد مسارات السياحة البيئية باستخدام ArcGIS", student: "نور العبادي", file: "downloads/reem_proj7.zip" },
+                { name: "أثر التلوث الصناعي على التربة في مصانع الهاشمية", student: "هبة الشوبكي", file: "downloads/reem_proj8.zip" },
+                { name: "نمذجة انتشار الغطاء النباتي الطبيعي في عجلون", student: "إيمان القضاة", file: "downloads/reem_proj9.zip" },
+                { name: "تقييم الكفاءة المكانية للمتنزهات العامة بعمان", student: "خلود الحياصات", file: "downloads/reem_proj10.zip" }
+            ]
         },
         fatima: {
             mainTitle: "قسم المشاريع الخاصة بدكتورة فاطمة",
             subTitle: "مشاريع الدكتورة فاطمة",
             desc: "تضم هذه الصفحة باقة متكاملة من أبحاث تخرج ومشاريع تخرج الطلبة المتميزة في نظم المعلومات الجغرافية والاستشعار عن بعد، والتي تمت جميعها بمتابعة وإشراف مباشر بواسطة الدكتورة فاطمة الطراونة.",
             supervisor: "المشرفة الأكاديمية: د. فاطمة الطراونة",
-            link: "students-fatima.html"
+            popupTitle: "مشاريع طلاب الدكتورة فاطمة الطراونة",
+            projects: [
+                { name: "النمذجة الهيدرولوجية لحوض وادي الموجب", student: "يزن الطراونة", file: "downloads/fatima_proj1.zip" },
+                { name: "مخاطر الانزلاقات الأرضية على الطرق الصحراوية", student: "مصطفى الضمور", file: "downloads/fatima_proj2.zip" },
+                { name: "استعمال نظم المعلومات الجغرافية في التخطيط الإقليمي", student: "طارق الصرايرة", file: "downloads/fatima_proj3.zip" },
+                { name: "التلوث البصري في المدن وعلاقته بالترتيب الحضري", student: "عبد الله الهلسا", file: "downloads/fatima_proj4.zip" },
+                { name: "ملاءمة الأرض للمطامر الصحية في محافظة الكرك", student: "حمزة النوايسة", file: "downloads/fatima_proj5.zip" },
+                { name: "إدارة الكوارث البيئية والحد من المخاطر الطبيعية", student: "سيف المجالي", file: "downloads/fatima_proj6.zip" },
+                { name: "التحليل المكاني لمواقع التعدين في الفوسفات", student: "معاذ البستنجي", file: "downloads/fatima_proj7.zip" },
+                { name: "جغرافية النقل وتوزيع الخدمات اللوجستية بالجنوب", student: "أسامة القيسي", file: "downloads/fatima_proj8.zip" },
+                { name: "مراقبة التصحر في الحماد الأردني بالاستشعار المباشر", student: "عادل المعايطة", file: "downloads/fatima_proj9.zip" },
+                { name: "تقييم محطات تحلية المياه الجوفية مكانياً", student: "سلمان المعمري", file: "downloads/fatima_proj10.zip" }
+            ]
         },
         najla: {
             mainTitle: "قسم المشاريع الخاصة بدكتورة نجلاء",
             subTitle: "مشاريع الدكتورة نجلاء",
             desc: "تضم هذه الصفحة باقة متكاملة من أبحاث تخرج ومشاريع تخرج الطلبة المتميزة في نظم المعلومات الجغرافية والاستشعار عن بعد، والمنبثقة عن مساقات مبادئ الخرائط الرقمية ونظرية الموقع تحت إشراف الدكتورة نجلاء حماد.",
             supervisor: "المشرفة الأكاديمية: د. نجلاء حماد",
-            link: "students-najla.html"
+            popupTitle: "مشاريع طلاب الدكتورة نجلاء حماد",
+            projects: [
+                { name: "بناء الخرائط الرقمية التفاعلية للمواقع الأثرية", student: "غيث ملكاوي", file: "downloads/najla_proj1.zip" },
+                { name: "تطبيقات نظرية الموقع لتحديد أفضل المراكز التجارية", student: "عمر الروسان", file: "downloads/najla_proj2.zip" },
+                { name: "إنشاء قاعدة بيانات جغرافية للمرافق الجامعية الأردنية", student: "إبراهيم عبيدات", file: "downloads/najla_proj3.zip" },
+                { name: "تحليل كفاءة شبكات الكهرباء في إربد بالتحليل المكاني", student: "زيد الزعبي", file: "downloads/najla_proj4.zip" },
+                { name: "تمثيل خرائط توزيع الكثافة السكانية بأسلوب الكوروبلث", student: "باسل الطعاني", file: "downloads/najla_proj5.zip" },
+                { name: "أتمتة إنتاج الخرائط الطبوغرافية باستخدام النماذج الرقمية", student: "فادي الشبول", file: "downloads/najla_proj6.zip" },
+                { name: "التحليل الجيومكاني لانتشار الغطاء الحرجى في شمال الأردن", student: "ليث القواسمة", file: "downloads/najla_proj7.zip" },
+                { name: "تحديد أنسب مسارات لخطوط المياه الناقلة الرئيسية", student: "خليل بني هاني", file: "downloads/najla_proj8.zip" },
+                { name: "تطوير نظام خرائط سياحي تفاعلي لمحافظة جرش", student: "مهند البطاينة", file: "downloads/najla_proj9.zip" },
+                { name: "تحديد النطاقات البيئية الملائمة لزراعة الزيتون", student: "منتصر جرادات", file: "downloads/najla_proj10.zip" }
+            ]
         }
     };
 
     // 3. دالة التبديل الديناميكي الفوري بين الدكاترة
     function updateDoctorContent(docKey, button) {
-        // إزالة الفعالية عن الأزرار الأخرى وتفعيل الزر الحالي
         document.querySelectorAll('.doc-btn').forEach(btn => btn.classList.remove('active'));
         button.classList.add('active');
 
-        // جلب البيانات بناءً على المفتاح المختار
         const docInfo = doctorsData[docKey];
 
-        // تحديث النصوص داخل الصندوق الرئيسي بسلاسة
         document.getElementById('box-main-title').innerText = docInfo.mainTitle;
         document.getElementById('box-sub-title').innerHTML = `<i class="fas fa-folder"></i> ${docInfo.subTitle}`;
         document.getElementById('box-description').innerText = docInfo.desc;
         document.getElementById('box-supervisor').innerText = docInfo.supervisor;
         
-        // تحديث رابط الزر الأخضر
-        document.getElementById('project-action-link').setAttribute('href', docInfo.link);
+        // حفظ مفتاح الدكتور المختار حالياً للاعتماد عليه عند فتح البوب اب
+        currentDoctorKey = docKey;
+    }
+
+    // 4. دالة بناء ومحاكاة فتح الـ Popup ديناميكياً
+    function openProjectsPopup() {
+        const docData = doctorsData[currentDoctorKey];
+        
+        // تحديث عنوان الـ Popup
+        document.getElementById('popup-title').innerHTML = `<i class="fas fa-file-invoice"></i> ${docData.popupTitle}`;
+        
+        // بناء الجدول لـ 10 مشاريع
+        let tbodyContent = "";
+        docData.projects.forEach(project => {
+            tbodyContent += `
+                <tr>
+                    <td><strong>${project.name}</strong></td>
+                    <td>${project.student}</td>
+                    <td style="text-align: center;">
+                        <a href="${project.file}" class="download-btn" download>
+                            <i class="fas fa-download"></i> تحميل
+                        </a>
+                    </td>
+                </tr>
+            `;
+        });
+        
+        // حقن الجدول بالبيانات المخصصة
+        document.getElementById('popup-table-content').innerHTML = tbodyContent;
+        
+        // إظهار البوب اب مع الحركة سريعة وسلسة
+        document.getElementById('projectsPopup').classList.add('show');
+    }
+
+    // 5. دالة إغلاق الـ Popup
+    function closeProjectsPopup() {
+        document.getElementById('projectsPopup').classList.remove('show');
+    }
+
+    // 6. دالة إغلاق الـ Popup عند النقر في المساحة الفارغة خارج الصندوق
+    function closePopupOnOverlay(event) {
+        if (event.target.id === "projectsPopup") {
+            closeProjectsPopup();
+        }
     }
 </script>
 
