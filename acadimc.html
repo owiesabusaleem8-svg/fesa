@@ -370,7 +370,7 @@
             box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
         }
 
-        /* ==================== تصميم النافذة المنبثقة (Popup) ==================== */
+        /* ==================== تصميم النافذة المنبثقة (Popup) المحسن والمستقر ==================== */
         .popup-overlay {
             position: fixed;
             top: 0;
@@ -394,7 +394,7 @@
         }
 
         .popup-box {
-            background: rgba(30, 41, 59, 0.85);
+            background: rgba(30, 41, 59, 0.9);
             border: 2px solid var(--glass-border);
             border-radius: 24px;
             width: 90%;
@@ -405,7 +405,7 @@
             position: relative;
             display: flex;
             flex-direction: column;
-            transform: scale(0.9);
+            transform: scale(0.95);
             transition: transform 0.3s ease;
         }
 
@@ -444,8 +444,10 @@
             gap: 10px;
         }
 
+        /* حاوية مرنة تمنع خروج الجداول خارج المحاذاة على الموبايل */
         .popup-body {
             overflow-y: auto;
+            overflow-x: auto;
             flex-grow: 1;
             padding-left: 5px;
         }
@@ -455,6 +457,7 @@
             width: 100%;
             border-collapse: collapse;
             text-align: right;
+            min-width: 500px; /* يضمن عدم تكدس النص على الموبايل */
         }
 
         .projects-table th {
@@ -501,6 +504,7 @@
         /* تخصيص شريط التمرير للجدول */
         .popup-body::-webkit-scrollbar {
             width: 6px;
+            height: 6px;
         }
         .popup-body::-webkit-scrollbar-track {
             background: rgba(15, 23, 42, 0.3);
@@ -685,7 +689,7 @@
                 { name: "تغير غطاء الأرض في عمان باستخدام الاستشعار عن بعد", student: "خالد الفايز", file: "downloads/ali_proj3.zip" },
                 { name: "تقييم جودة المياه الجوفية باستخدام تقنيات IDW", student: "يوسف العلي", file: "downloads/ali_proj4.zip" },
                 { name: "تحديد المواقع المثلى لجمع تجميع مياه الأمطار", student: "عمر المناصير", file: "downloads/ali_proj5.zip" },
-                { name: "تأثير التوسع الحضري على الأراضي الزراعية", student: "sلطان العتيبي", file: "downloads/ali_proj6.zip" },
+                { name: "تأثير التوسع الحضري على الأراضي الزراعية", student: "سلطان العتيبي", file: "downloads/ali_proj6.zip" },
                 { name: "بناء نموذج ثلاثي الأبعاد للمحاضر والمباني الرقمية", student: "حمزة العواملة", file: "downloads/ali_proj7.zip" },
                 { name: "تطبيقات نظم المعلومات الجغرافية في تتبع الأوبئة", student: "بلال المصري", file: "downloads/ali_proj8.zip" },
                 { name: "مراقبة مستويات زحف الرمال باستعمال المركبات الفضائية", student: "فيصل الزعبي", file: "downloads/ali_proj9.zip" },
@@ -720,11 +724,11 @@
             projects: [
                 { name: "النمذجة الهيدرولوجية لحوض وادي الموجب", student: "يزن الطراونة", file: "downloads/fatima_proj1.zip" },
                 { name: "مخاطر الانزلاقات الأرضية على الطرق الصحراوية", student: "مصطفى الضمور", file: "downloads/fatima_proj2.zip" },
-                { name: "استعمل نظم المعلومات الجغرافية في التخطيط الإقليمي", student: "طارق الصرايرة", file: "downloads/fatima_proj3.zip" },
+                { name: "استعل نظم المعلومات الجغرافية في التخطيط الإقليمي", student: "طارق الصرايرة", file: "downloads/fatima_proj3.zip" },
                 { name: "التلوث البصري في المدن وعلاقته بالترتيب الحضري", student: "عبد الله الهلسا", file: "downloads/fatima_proj4.zip" },
                 { name: "ملاءمة الأرض للمطامر الصحية في محافظة الكرك", student: "حمزة النوايسة", file: "downloads/fatima_proj5.zip" },
                 { name: "إدارة الكوارث البيئية والحد من المخاطر الطبيعية", student: "سيف المجالي", file: "downloads/fatima_proj6.zip" },
-                { name: "التحليل المكاني لمواقع التعدين في الفوسفات", student: "معاذ البستنجي", file: "downloads/fatima_proj7.zip" },
+                { name: "التحليل المكاني لمواقع Tعدين في الفوسفات", student: "معاذ البستنجي", file: "downloads/fatima_proj7.zip" },
                 { name: "جغرافية النقل وتوزيع الخدمات اللوجستية بالجنوب", student: "أسامة القيسي", file: "downloads/fatima_proj8.zip" },
                 { name: "مراقبة التصحر في الحماد الأردني بالاستشعار المباشر", student: "عادل المعايطة", file: "downloads/fatima_proj9.zip" },
                 { name: "تقييم محطات تحلية المياه الجوفية مكانياً", student: "سلمان المعمري", file: "downloads/fatima_proj10.zip" }
