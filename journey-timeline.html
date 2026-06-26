@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>مسار الرحلة | Fesageo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg-deep:#070b14;
+    --teal:#00d9c0;
+    --teal-dim: rgba(0,217,192,0.35);
+    --navy:#13233f;
+    --gold:#d4af6a;
+    --ink:#eaf2f4;
+    --ink-dim:#9fb3c0;
+  }
+  *{box-sizing:border-box;}
+  html,body{
+    margin:0;padding:0;
+    background:var(--bg-deep);
+    color:var(--ink);
+    font-family:'Tajawal',sans-serif;
+    overflow-x:hidden;
+    width:100%;
+  }
+  #stars-canvas{
+    position:fixed; inset:0;
+    width:100%; height:100%;
+    z-index:0;
+  }
+
+  .page-header{
+    position:relative;
+    z-index:5;
+    text-align:center;
+    padding:70px 20px 20px;
+  }
+  .page-header .eyebrow{
+    font-size:13px;
+    letter-spacing:.18em;
+    color:var(--teal);
+    text-transform:uppercase;
+    font-weight:500;
+    opacity:.85;
+  }
+  .page-header h1{
+    margin:6px 0 0;
+    font-size:clamp(26px,4vw,42px);
+    font-weight:800;
+    letter-spacing:-0.5px;
+    background:linear-gradient(90deg,#eaf2f4, var(--teal) 60%, var(--gold));
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+  }
+  .page-header p{
+    margin:8px auto 0;
+    max-width:520px;
+    color:var(--ink-dim);
+    font-size:14px;
+    line-height:1.7;
+  }
+
+  .back-link{
+    position:fixed;
+    top:24px; right:24px;
+    z-index:6;
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    font-size:13px;
+    color:var(--ink-dim);
+    text-decoration:none;
+    background:rgba(10,17,32,.55);
+    border:1px solid rgba(255,255,255,0.08);
+    backdrop-filter:blur(10px);
+    border-radius:999px;
+    padding:8px 16px;
+    transition:border-color .2s ease, color .2s ease;
+  }
+  .back-link:hover{ border-color:var(--teal-dim); color:var(--teal); }
+  .back-link svg{ width:13px; height:13px; transform:rotate(180deg); }
+
+  /* ============ مسار الرحلة ============ */
+  #journey{
+    position:relative;
+    z-index:2;
+    max-width:780px;
+    margin:0 auto;
+    padding:40px 20px 160px;
+  }
+
+  /* الخط المركزي — يشبه مسار GPS */
+  .track{
+    position:absolute;
+    top:0; bottom:80px;
+    right:50%;
+    width:3px;
+    margin-right:-1.5px;
+    background:linear-gradient(to bottom,
+      rgba(0,217,192,0.08) 0%,
+      rgba(0,217,192,0.08) 100%);
+    border-radius:3px;
+    overflow:hidden;
+  }
+  .track-fill{
+    position:absolute;
+    top:0; right:0; left:0;
+    height:0%;
+    background:linear-gradient(to bottom, var(--teal), var(--gold));
+    box-shadow:0 0 14px var(--teal);
+    transition:height .1s linear;
+  }
+
+  .station{
+    position:relative;
+    min-height:200px;
+    display:flex;
+    align-items:center;
+    padding:30px 0;
+    opacity:0;
+    transform:translateY(40px);
+    transition:opacity .7s cubic-bezier(.2,.8,.2,1), transform .7s cubic-bezier(.2,.8,.2,1);
+  }
+  .station.visible{
+    opacity:1;
+    transform:translateY(0);
+  }
+
+  /* النقطة على الخط */
+  .station-node{
+    position:absolute;
+    right:50%;
+    top:50%;
+    transform:translate(50%,-50%);
+    width:18px; height:18px;
+    border-radius:50%;
+    background:#0a1120;
+    border:2.5px solid var(--teal-dim);
+    z-index:3;
+    transition:border-color .5s ease, box-shadow .5s ease, background .5s ease;
+  }
+  .station.visible .station-node{
+    border-color:var(--teal);
+    background:var(--teal);
+    box-shadow:0 0 18px rgba(0,217,192,0.8), 0 0 36px rgba(0,217,192,0.4);
+  }
+  .station.final .station-node{
+    width:26px; height:26px;
+    border-color:var(--gold);
+  }
+  .station.final.visible .station-node{
+    background:var(--gold);
+    box-shadow:0 0 24px rgba(212,175,106,0.9), 0 0 48px rgba(212,175,106,0.5);
+  }
+
+  /* البطاقة: تتناوب يمين/يسار */
+  .station-card{
+    width:calc(50% - 38px);
+    background:linear-gradient(160deg, rgba(19,35,63,.55), rgba(7,14,26,.7));
+    border:1.4px solid rgba(0,217,192,0.15);
+    border-radius:14px;
+    padding:22px 24px;
+    backdrop-filter:blur(6px);
+    transition:border-color .5s ease, box-shadow .5s ease;
+  }
+  .station.visible .station-card{
+    border-color:var(--teal-dim);
+    box-shadow:0 0 24px rgba(0,217,192,0.1);
+  }
+  .station.final .station-card{
+    border-color:rgba(212,175,106,0.3);
+  }
+  .station.final.visible .station-card{
+    box-shadow:0 0 30px rgba(212,175,106,0.18);
+    border-color:var(--gold);
+  }
+
+  .station:nth-child(odd) .station-card{ margin-right:auto; margin-left:0; text-align:right; }
+  .station:nth-child(even) .station-card{ margin-left:auto; margin-right:0; text-align:right; }
+
+  .station-icon{
+    font-size:26px;
+    margin-bottom:8px;
+    display:block;
+  }
+  .station-year{
+    font-size:13px;
+    letter-spacing:.14em;
+    color:var(--gold);
+    font-weight:700;
+    text-transform:uppercase;
+  }
+  .station.final .station-year{ color:var(--teal); }
+  .station-title{
+    margin:6px 0 0;
+    font-size:19px;
+    font-weight:800;
+    color:#fff;
+  }
+  .station-desc{
+    margin:8px 0 0;
+    font-size:13.5px;
+    line-height:1.85;
+    color:var(--ink-dim);
+  }
+
+  /* === الجوال: عمود واحد كل البطاقات يمين الخط === */
+  @media (max-width:680px){
+    .track{ right:18px; }
+    .station-node{ right:18px; }
+    .station-card{
+      width:calc(100% - 56px);
+      margin-right:56px !important;
+      margin-left:0 !important;
+    }
+    .station.final .station-node{ width:22px; height:22px; }
+  }
+
+  /* المحطة الأخيرة - احتفالية */
+  .final-burst{
+    position:absolute;
+    right:50%;
+    top:50%;
+    transform:translate(50%,-50%);
+    width:60px; height:60px;
+    border-radius:50%;
+    pointer-events:none;
+    z-index:1;
+  }
+  .station.final.visible .final-burst{
+    animation:burst 1.8s ease-out infinite;
+  }
+  @keyframes burst{
+    0%{ box-shadow:0 0 0 0 rgba(212,175,106,0.5); }
+    100%{ box-shadow:0 0 0 28px rgba(212,175,106,0); }
+  }
+  @media (max-width:680px){
+    .final-burst{ right:18px; }
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .station{ transition:opacity .3s ease; transform:none !important; }
+    .station.final.visible .final-burst{ animation:none; }
+  }
+
+  /* ============ زر "تفاصيل أكثر" داخل كل بطاقة ============ */
+  .station-more{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    margin-top:14px;
+    background:transparent;
+    border:1px solid var(--teal-dim);
+    color:var(--teal);
+    font-family:'Tajawal',sans-serif;
+    font-size:12.5px;
+    font-weight:600;
+    padding:7px 14px;
+    border-radius:999px;
+    cursor:pointer;
+    transition:background .2s ease, color .2s ease, border-color .2s ease;
+  }
+  .station-more:hover{
+    background:var(--teal);
+    color:#04130f;
+    border-color:var(--teal);
+  }
+  .station.final .station-more{
+    border-color:rgba(212,175,106,0.5);
+    color:var(--gold);
+  }
+  .station.final .station-more:hover{
+    background:var(--gold);
+    color:#1a1304;
+    border-color:var(--gold);
+  }
+  .station-more svg{ width:13px; height:13px; transform:rotate(180deg); }
+
+  /* ============ Popup تفاصيل المحطة ============ */
+  .station-backdrop{
+    position:fixed; inset:0;
+    background:rgba(4,7,14,0.82);
+    backdrop-filter:blur(6px);
+    z-index:60;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    opacity:0;
+    pointer-events:none;
+    transition:opacity .35s ease;
+    padding:20px;
+  }
+  .station-backdrop.open{ opacity:1; pointer-events:auto; }
+
+  .station-popup{
+    width:min(560px,94vw);
+    max-height:84vh;
+    overflow-y:auto;
+    background:linear-gradient(165deg, rgba(19,35,63,.92), rgba(7,11,20,.97));
+    border:1.4px solid var(--teal-dim);
+    border-radius:18px;
+    padding:32px 28px 26px;
+    box-shadow:0 30px 80px rgba(0,0,0,.6), 0 0 50px rgba(0,217,192,0.08);
+    position:relative;
+    transform:scale(.92) translateY(16px);
+    transition:transform .4s cubic-bezier(.2,.9,.25,1);
+  }
+  .station-backdrop.open .station-popup{ transform:scale(1) translateY(0); }
+  .station-popup.final-style{ border-color:rgba(212,175,106,0.4); }
+
+  .popup-close{
+    position:absolute;
+    top:14px; left:14px;
+    width:34px; height:34px;
+    border-radius:50%;
+    background:rgba(0,0,0,.4);
+    border:1px solid rgba(255,255,255,0.15);
+    color:#fff;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+    font-size:16px;
+    transition:background .2s;
+  }
+  .popup-close:hover{ background:rgba(255,80,80,.5); }
+
+  .popup-icon{ font-size:34px; display:block; margin-bottom:6px; }
+  .popup-year{
+    font-size:13px;
+    letter-spacing:.14em;
+    color:var(--gold);
+    font-weight:700;
+    text-transform:uppercase;
+  }
+  .station-popup.final-style .popup-year{ color:var(--teal); }
+  .popup-title{
+    margin:6px 0 0;
+    font-size:23px;
+    font-weight:800;
+    color:#fff;
+  }
+  .popup-desc{
+    margin:16px 0 0;
+    font-size:14.5px;
+    line-height:1.95;
+    color:var(--ink-dim);
+  }
+
+  .popup-stats{
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(110px,1fr));
+    gap:12px;
+    margin-top:22px;
+  }
+  .stat-box{
+    background:rgba(0,217,192,0.06);
+    border:1px solid rgba(0,217,192,0.15);
+    border-radius:12px;
+    padding:14px 10px;
+    text-align:center;
+  }
+  .stat-num{
+    font-size:22px;
+    font-weight:800;
+    color:var(--teal);
+    display:block;
+  }
+  .station-popup.final-style .stat-num{ color:var(--gold); }
+  .stat-label{
+    font-size:11.5px;
+    color:var(--ink-dim);
+    margin-top:4px;
+    display:block;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .station-popup{ transition:none; }
+  }
+</style>
+</head>
+<body>
+
+<canvas id="stars-canvas"></canvas>
+
+<a href="student-life.html" class="back-link">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+  الحياة الطلابية والأنشطة
+</a>
+
+<div class="page-header">
+  <div class="eyebrow">Fesageo · قسم الجغرافيا ونظم المعلومات الجغرافية</div>
+  <h1>مسار الرحلة</h1>
+  <p>من أول محاضرة إلى لحظة التخرج — هذه محطات الدفعة عبر خمس سنوات</p>
+</div>
+
+<div id="journey">
+  <div class="track"><div class="track-fill" id="trackFill"></div></div>
+
+  <div class="station" data-year="2022">
+    <div class="station-node"></div>
+    <div class="station-card">
+      <span class="station-icon">🧭</span>
+      <div class="station-year">2022</div>
+      <h3 class="station-title">بداية الرحلة</h3>
+      <p class="station-desc">أول خطوة في عالم الجغرافيا ونظم المعلومات الجغرافية. محاضرات تأسيسية، وجوه جديدة، وشغف بدأ يتشكّل.</p>
+      <button class="station-more" data-year-key="2022">تفاصيل أكثر <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></button>
+    </div>
+  </div>
+
+  <div class="station" data-year="2023">
+    <div class="station-node"></div>
+    <div class="station-card">
+      <span class="station-icon">🛰️</span>
+      <div class="station-year">2023</div>
+      <h3 class="station-title">أول مختبر GIS</h3>
+      <p class="station-desc">افتتاح أول مختبر متخصص بنظم المعلومات الجغرافية، وأول تجربة عملية مع البيانات المكانية والخرائط الرقمية.</p>
+      <button class="station-more" data-year-key="2023">تفاصيل أكثر <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></button>
+    </div>
+  </div>
+
+  <div class="station" data-year="2024">
+    <div class="station-node"></div>
+    <div class="station-card">
+      <span class="station-icon">🏕️</span>
+      <div class="station-year">2024</div>
+      <h3 class="station-title">رحلات ميدانية</h3>
+      <p class="station-desc">من الصحراء إلى الساحل، تعلّمنا أن الجغرافيا الحقيقية تُقرأ في الميدان لا في الكتاب فقط.</p>
+      <button class="station-more" data-year-key="2024">تفاصيل أكثر <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></button>
+    </div>
+  </div>
+
+  <div class="station" data-year="2025">
+    <div class="station-node"></div>
+    <div class="station-card">
+      <span class="station-icon">📊</span>
+      <div class="station-year">2025</div>
+      <h3 class="station-title">مشروع التخرج</h3>
+      <p class="station-desc">سنة من البحث والتحليل والعمل الميداني، تُوّجت بمشروع يجمع كل ما تعلّمناه في رحلتنا الأكاديمية.</p>
+      <button class="station-more" data-year-key="2025">تفاصيل أكثر <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></button>
+    </div>
+  </div>
+
+  <div class="station final" data-year="2026">
+    <div class="final-burst"></div>
+    <div class="station-node"></div>
+    <div class="station-card">
+      <span class="station-icon">🎓</span>
+      <div class="station-year">2026</div>
+      <h3 class="station-title">Graduation</h3>
+      <p class="station-desc">اللحظة التي طال انتظارها. دفعة كاملة تنطلق لتكتب فصلاً جديداً، حاملة معها أثر فسا جيو إلى العالم.</p>
+      <button class="station-more" data-year-key="2026">تفاصيل أكثر <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></button>
+    </div>
+  </div>
+</div>
+
+<!-- Popup: تفاصيل المحطة -->
+<div class="station-backdrop" id="stationBackdrop">
+  <div class="station-popup" id="stationPopup">
+    <button class="popup-close" id="popupClose">✕</button>
+    <span class="popup-icon" id="popupIcon"></span>
+    <div class="popup-year" id="popupYear"></div>
+    <h3 class="popup-title" id="popupTitle"></h3>
+    <p class="popup-desc" id="popupDesc"></p>
+    <div class="popup-stats" id="popupStats"></div>
+  </div>
+</div>
+
+<script>
+/* =========================================================
+   Timeline عمودي يتفعّل بالسكرول
+   ========================================================= */
+
+/* ---------- خلفية النجوم ---------- */
+(function starsBG(){
+  const c = document.getElementById('stars-canvas');
+  const ctx = c.getContext('2d');
+  let stars = [];
+  function resize(){
+    c.width = innerWidth; c.height = innerHeight;
+    stars = [];
+    const count = Math.floor((innerWidth*innerHeight)/4500);
+    for(let i=0;i<count;i++){
+      stars.push({
+        x:Math.random()*c.width, y:Math.random()*c.height,
+        r:Math.random()*1.3+0.2, a:Math.random()*0.6+0.2, tw:Math.random()*0.02+0.005
+      });
+    }
+  }
+  function draw(){
+    ctx.clearRect(0,0,c.width,c.height);
+    ctx.fillStyle = '#070b14';
+    ctx.fillRect(0,0,c.width,c.height);
+    for(const s of stars){
+      s.a += s.tw;
+      const alpha = 0.4 + Math.sin(s.a)*0.4;
+      ctx.beginPath();
+      ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
+      ctx.fillStyle = `rgba(220,235,240,${Math.max(0,alpha)})`;
+      ctx.fill();
+    }
+    requestAnimationFrame(draw);
+  }
+  window.addEventListener('resize', resize);
+  resize(); draw();
+})();
+
+/* ---------- ظهور المحطات عند السكرول (IntersectionObserver) ---------- */
+const stations = document.querySelectorAll('.station');
+const observer = new IntersectionObserver((entries)=>{
+  entries.forEach(entry=>{
+    if(entry.isIntersecting){
+      entry.target.classList.add('visible');
+    }
+  });
+}, { threshold: 0.35 });
+stations.forEach(s => observer.observe(s));
+
+/* ---------- تعبئة الخط المركزي بنسبة تقدم السكرول داخل المسار ---------- */
+const journey = document.getElementById('journey');
+const trackFill = document.getElementById('trackFill');
+
+function updateTrackFill(){
+  const rect = journey.getBoundingClientRect();
+  const viewportH = window.innerHeight;
+  // نقيس تقدم السكرول من بداية الحقل إلى قرب نهايته
+  const totalScrollable = rect.height - viewportH*0.5;
+  const scrolled = (viewportH*0.5) - rect.top;
+  let progress = totalScrollable > 0 ? scrolled / totalScrollable : 0;
+  progress = Math.max(0, Math.min(1, progress));
+  trackFill.style.height = (progress*100) + '%';
+}
+window.addEventListener('scroll', updateTrackFill, {passive:true});
+window.addEventListener('resize', updateTrackFill);
+updateTrackFill();
+
+/* ---------- popup تفاصيل المحطة ---------- */
+/* بيانات تجريبية موسّعة لكل سنة - استبدلها بسهولة ببياناتك الفعلية */
+const stationDetails = {
+  "2022": {
+    icon:"🧭", title:"بداية الرحلة",
+    desc:"في خريف 2022 استقبل القسم دفعة جديدة من الطلاب بمقررات تأسيسية في الجغرافيا الطبيعية والبشرية، إلى جانب مدخل أولي لمفاهيم نظم المعلومات الجغرافية. كانت هذه المرحلة بمثابة بناء القاعدة الفكرية التي استند إليها كل ما تلاها من تخصص وتطبيق عملي.",
+    stats:[ {num:"45", label:"طالباً مستجداً"}, {num:"6", label:"مقررات تأسيسية"}, {num:"3", label:"محاضرات تعريفية"} ]
+  },
+  "2023": {
+    icon:"🛰️", title:"أول مختبر GIS",
+    desc:"شهد هذا العام افتتاح أول مختبر متخصص بنظم المعلومات الجغرافية داخل القسم، مزوّداً بأجهزة استقبال GPS ومحطات عمل لتحليل الصور الفضائية. كانت هذه أول مرة يتحول فيها المحتوى النظري إلى تجربة عملية ملموسة باستخدام برمجيات GIS الحقيقية.",
+    stats:[ {num:"12", label:"محطة عمل"}, {num:"8", label:"ورش تدريبية"}, {num:"40+", label:"طالباً تدرّب على المختبر"} ]
+  },
+  "2024": {
+    icon:"🏕️", title:"رحلات ميدانية",
+    desc:"امتدت الرحلات الميدانية هذا العام لتغطي بيئات متنوعة، من الكثبان الرملية إلى المناطق الساحلية، بهدف ربط المفاهيم النظرية بالواقع الجغرافي المباشر. شارك الطلاب في جمع بيانات ميدانية حقيقية استُخدمت لاحقاً في تحليلاتهم الأكاديمية.",
+    stats:[ {num:"6", label:"رحلات ميدانية"}, {num:"4", label:"مواقع جغرافية"}, {num:"50+", label:"عينة بيانات مُجمّعة"} ]
+  },
+  "2025": {
+    icon:"📊", title:"مشروع التخرج",
+    desc:"كانت هذه السنة مرحلة التطبيق الأعمق، حيث بدأ الطلاب بصياغة مشاريع تخرجهم الفردية والجماعية تحت إشراف أكاديمي مباشر. تنوعت المشاريع بين التخطيط الحضري، التغير المناخي، والاستشعار عن بعد، وخضعت لمراجعات دورية قبل العرض النهائي.",
+    stats:[ {num:"38", label:"مشروع تخرج"}, {num:"9", label:"مشرفين أكاديميين"}, {num:"5", label:"مراجعات دورية"} ]
+  },
+  "2026": {
+    icon:"🎓", title:"Graduation",
+    desc:"وصلت الدفعة إلى خط النهاية بعد أربع سنوات من العمل الأكاديمي والميداني المتواصل. حفل التخرج لم يكن فقط احتفالاً بالشهادات، بل توثيقاً لمسار جماعي بدأ بخطوة صغيرة في 2022 وانتهى بدفعة جاهزة لسوق العمل والدراسات العليا.",
+    stats:[ {num:"38", label:"خريجاً وخريجة"}, {num:"4", label:"سنوات دراسية"}, {num:"100%", label:"معدل إكمال المشاريع"} ]
+  }
+};
+
+const stationBackdrop = document.getElementById('stationBackdrop');
+const stationPopup = document.getElementById('stationPopup');
+const popupIcon = document.getElementById('popupIcon');
+const popupYear = document.getElementById('popupYear');
+const popupTitle = document.getElementById('popupTitle');
+const popupDesc = document.getElementById('popupDesc');
+const popupStats = document.getElementById('popupStats');
+
+function openStationPopup(yearKey){
+  const d = stationDetails[yearKey];
+  if(!d) return;
+
+  popupIcon.textContent = d.icon;
+  popupYear.textContent = yearKey;
+  popupTitle.textContent = d.title;
+  popupDesc.textContent = d.desc;
+  popupStats.innerHTML = d.stats.map(s => `
+    <div class="stat-box">
+      <span class="stat-num">${s.num}</span>
+      <span class="stat-label">${s.label}</span>
+    </div>
+  `).join('');
+
+  stationPopup.classList.toggle('final-style', yearKey === '2026');
+  stationBackdrop.classList.add('open');
+}
+function closeStationPopup(){
+  stationBackdrop.classList.remove('open');
+}
+
+document.querySelectorAll('.station-more').forEach(btn=>{
+  btn.addEventListener('click', (e)=>{
+    e.stopPropagation();
+    openStationPopup(btn.dataset.yearKey);
+  });
+});
+document.getElementById('popupClose').addEventListener('click', closeStationPopup);
+stationBackdrop.addEventListener('click', (e)=>{ if(e.target===stationBackdrop) closeStationPopup(); });
+document.addEventListener('keydown', (e)=>{
+  if(e.key==='Escape' && stationBackdrop.classList.contains('open')) closeStationPopup();
+});
+</script>
+</body>
+</html>
