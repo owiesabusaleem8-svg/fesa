@@ -1,0 +1,898 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Fesageo - الهيئة التدريسية</title>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="hero-wrapper">
+    
+    <nav class="header-nav">
+        <div class="nav-links">
+            <a href="index.html" class="nav-item">الرئيسية</a>
+            <a href="doctors.html" class="nav-item active">الهيئة التدريسية</a>
+            <a href="https://maps.google.com/?q=Faculty+of+Educational+Sciences+%26+Arts+FESA+UNRWA" target="_blank" class="nav-item">موقع الجامعة (اللوكيشن)</a>
+            <a href="about.html" class="nav-item">عن القسم</a>
+            <a href="https://mail.google.com/mail/?view=cm&fs=1&to=fesageo@gmail.com" target="_blank" class="contact-link">تواصل معنا</a>
+        </div>
+        
+        <div class="brand-box">
+            <div class="site-title">Fesa<span>geo</span></div>
+            <img src="https://i.ibb.co/Fk3Yy8Qb/image.png" alt="شعار الكلية" class="logo-img">
+        </div>
+    </nav>
+    
+    <div class="header-title">
+        <h2>قسم الجغرافيا ونظم المعلومات الجغرافية</h2>
+        <p>بوابة أعضاء هيئة التدريس الرقمية</p>
+    </div>
+
+    <div class="grid-container">
+        
+        <div class="card">
+            <div class="info-top">
+                <i class="fas fa-satellite-dish tech-icon"></i>
+                <div class="name">د. علي فرغل</div>
+                <div class="specialty">عضو هيئة تدريس</div>
+            </div>
+            <div class="btn-group">
+                <button class="btn btn-courses" onclick="openMessagePopup('د. علي فرغل', 'أهلاً بكم في قسم الجغرافيا ونظم المعلومات الجغرافية. نسعى دائماً لتقديم أفضل مستويات التعليم والتدريب الميداني لتمكينكم في سوق العمل المتميز بالتقنيات الحديثة.')">
+                    <i class="fas fa-comment-alt"></i> رسالة الدكتور
+                </button>
+                <a href="#" target="_blank" class="btn btn-cv">
+                    <i class="fas fa-id-card"></i> السيرة الذاتية
+                </a>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="info-top">
+                <i class="fas fa-map-marked-alt tech-icon"></i>
+                <div class="name">د. ريم الزيود</div>
+                <div class="specialty">عضو هيئة تدريس</div>
+            </div>
+            <div class="btn-group">
+                <button class="btn btn-courses" onclick="openMessagePopup('د. ريم الزيود', 'أبنائي الطلبة، نظم المعلومات الجغرافية والاستشعار عن بعد هي لغة المستقبل. واظبوا على التطبيق العملي والمثابرة، فأنتم بناة الغد.')">
+                    <i class="fas fa-comment-alt"></i> رسالة الدكتور
+                </button>
+                <a href="#" target="_blank" class="btn btn-cv">
+                    <i class="fas fa-id-card"></i> السيرة الذاتية
+                </a>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="info-top">
+                <i class="fas fa-globe-africa tech-icon"></i>
+                <div class="name">د. فاطمة الطراونة</div>
+                <div class="specialty">عضو هيئة تدريس</div>
+            </div>
+            <div class="btn-group">
+                <button class="btn btn-courses" onclick="openMessagePopup('د. فاطمة الطراونة', 'مرحباً بكم في صرح العلم. تذكروا دائماً أن البحث العلمي هو المفتاح لتطوير المجتمعات وحل المشكلات البيئية والمكانية.')">
+                    <i class="fas fa-comment-alt"></i> رسالة الدكتور
+                </button>
+                <a href="#" target="_blank" class="btn btn-cv">
+                    <i class="fas fa-id-card"></i> السيرة الذاتية
+                </a>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="info-top">
+                <i class="fas fa-microchip tech-icon"></i>
+                <div class="name">د. نجلاء حماد</div>
+                <div class="specialty">عضو هيئة تدريس</div>
+            </div>
+            <div class="btn-group">
+                <button class="btn btn-courses" onclick="openMessagePopup('د. نجلاء حماد', 'أعزائي الطلبة، يسعدني دائماً تقديم الدعم الأكاديمي والمعنوي لكم طوال مسيرتكم الجامعية. أبوابنا مفتوحة لاستفساراتكم لنتقدم معاً نحو النجاح.')">
+                    <i class="fas fa-comment-alt"></i> رسالة الدكتور
+                </button>
+                <a href="#" target="_blank" class="btn btn-cv">
+                    <i class="fas fa-id-card"></i> السيرة الذاتية
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="main-course-trigger-container">
+        <button class="btn-main-courses" onclick="openCoursesPopup()">
+            <i class="fas fa-folder-open"></i> استعراض كافة المواد الدراسية وقسم التحميل
+        </button>
+    </div>
+
+</div>
+
+<div class="popup-overlay" id="messagePopup">
+    <div class="popup-box">
+        <button class="popup-close" onclick="closeMessagePopup()"><i class="fas fa-times"></i></button>
+        <div class="popup-icon"><i class="fas fa-quote-right"></i></div>
+        <h3 id="popupDocName">اسم الدكتور</h3>
+        <p class="popup-text" id="popupDocText">هنا نص الرسالة النصية الترحيبية للطلاب...</p>
+    </div>
+</div>
+
+<div class="popup-overlay" id="coursesPopup">
+    <div class="popup-box large-box">
+        <button class="popup-close" onclick="closeCoursesPopup()"><i class="fas fa-times"></i></button>
+        <h3 style="color: #00f2ff; margin: 0 0 10px 0; font-size: 22px;">المكتبة الدراسية الشاملة</h3>
+        <p style="color: #94a3b8; font-size: 13px; margin: 0 0 20px 0;">اضغط على زر تحميل للحصول على الخطط الدراسية والمواد العلمية مباشرة.</p>
+        
+        <div class="courses-scroll-container">
+           <div class="courses-table-list" id="coursesList">
+                
+                <div class="mini-course-item">
+                    <div class="mini-course-details">
+                        <h4>نظم معلومات جغرافية (1)</h4>
+                        <p>بإشراف: <span class="doc-name-edit">د. علي فرغل</span></p>
+                    </div>
+                    <a href="#" class="btn-mini-download"><i class="fas fa-download"></i> تحميل</a>
+                </div>
+
+                <div class="mini-course-item">
+                    <div class="mini-course-details">
+                        <h4>نظم معلومات جغرافية (2)</h4>
+                        <p>بإشراف: <span class="doc-name-edit">د. علي فرغل</span></p>
+                    </div>
+                    <a href="#" class="btn-mini-download"><i class="fas fa-download"></i> تحميل</a>
+                </div>
+
+                <div class="mini-course-item">
+                    <div class="mini-course-details">
+                        <h4>الاستشعار عن بعد</h4>
+                        <p>بإشراف: <span class="doc-name-edit">د. ريم الزيود</span></p>
+                    </div>
+                    <a href="#" class="btn-mini-download"><i class="fas fa-download"></i> تحميل</a>
+                </div>
+
+                <div class="mini-course-item">
+                    <div class="mini-course-details">
+                        <h4>تحليل الصور الجوية</h4>
+                        <p>بإشراف: <span class="doc-name-edit">د. ريم الزيود</span></p>
+                    </div>
+                    <a href="#" class="btn-mini-download"><i class="fas fa-download"></i> تحميل</a>
+                </div>
+
+                <div class="mini-course-item">
+                    <div class="mini-course-details">
+                        <h4>جغرافيا الأردن</h4>
+                        <p>بإشراف: <span class="doc-name-edit">د. فاطمة الطراونة</span></p>
+                    </div>
+                    <a href="#" class="btn-mini-download"><i class="fas fa-download"></i> تحميل</a>
+                </div>
+
+                <div class="mini-course-item">
+                    <div class="mini-course-details">
+                        <h4>الجغرافيا الإقليمية</h4>
+                        <p>بإشراف: <span class="doc-name-edit">د. فاطمة الطراونة</span></p>
+                    </div>
+                    <a href="#" class="btn-mini-download"><i class="fas fa-download"></i> تحميل</a>
+                </div>
+
+                <div class="mini-course-item">
+                    <div class="mini-course-details">
+                        <h4>مبادئ الخرائط الرقمية</h4>
+                        <p>بإشراف: <span class="doc-name-edit">د. نجلاء حماد</span></p>
+                    </div>
+                    <a href="#" class="btn-mini-download"><i class="fas fa-download"></i> تحميل</a>
+                </div>
+
+                <div class="mini-course-item">
+                    <div class="mini-course-details">
+                        <h4>الخرائط الموضوعية</h4>
+                        <p>بإشراف: <span class="doc-name-edit">د. نجلاء حماد</span></p>
+                    </div>
+                    <a href="#" class="btn-mini-download"><i class="fas fa-download"></i> تحميل</a>
+                </div>
+
+                <div class="mini-course-item">
+                    <div class="mini-course-details">
+                        <h4>جغرافيا بشرية</h4>
+                        <p>بإشراف: <span class="doc-name-edit">د. علي فرغل</span></p>
+                    </div>
+                    <a href="#" class="btn-mini-download"><i class="fas fa-download"></i> تحميل</a>
+                </div>
+
+                <div class="mini-course-item">
+                    <div class="mini-course-details">
+                        <h4>جغرافيا طبيعية</h4>
+                        <p>بإشراف: <span class="doc-name-edit">د. فاطمة الطراونة</span></p>
+                    </div>
+                    <a href="#" class="btn-mini-download"><i class="fas fa-download"></i> تحميل</a>
+                </div>
+
+                <div class="mini-course-item">
+                    <div class="mini-course-details">
+                        <h4>الجيومورفولوجيا</h4>
+                        <p>بإشراف: <span class="doc-name-edit">د. فاطمة الطراونة</span></p>
+                    </div>
+                    <a href="#" class="btn-mini-download"><i class="fas fa-download"></i> تحميل</a>
+                </div>
+
+                <div class="mini-course-item">
+                    <div class="mini-course-details">
+                        <h4>المناخ والأرصاد الجوية</h4>
+                        <p>بإشراف: <span class="doc-name-edit">د. ريم الزيود</span></p>
+                    </div>
+                    <a href="#" class="btn-mini-download"><i class="fas fa-download"></i> تحميل</a>
+                </div>
+
+                <div class="mini-course-item">
+                    <div class="mini-course-details">
+                        <h4>الهيدرولوجيا</h4>
+                        <p>بإشراف: <span class="doc-name-edit">د. علي فرغل</span></p>
+                    </div>
+                    <a href="#" class="btn-mini-download"><i class="fas fa-download"></i> تحميل</a>
+                </div>
+
+                <div class="mini-course-item">
+                    <div class="mini-course-details">
+                        <h4>جغرافيا التربة</h4>
+                        <p>بإشراف: <span class="doc-name-edit">د. نجلاء حماد</span></p>
+                    </div>
+                    <a href="#" class="btn-mini-download"><i class="fas fa-download"></i> تحميل</a>
+                </div>
+
+                <div class="mini-course-item">
+                    <div class="mini-course-details">
+                        <h4>جغرافيا السكان</h4>
+                        <p>بإشراف: <span class="doc-name-edit">د. فاطمة الطراونة</span></p>
+                    </div>
+                    <a href="#" class="btn-mini-download"><i class="fas fa-download"></i> تحميل</a>
+                </div>
+
+                <div class="mini-course-item">
+                    <div class="mini-course-details">
+                        <h4>جغرافيا الزراعة</h4>
+                        <p>بإشراف: <span class="doc-name-edit">د. ريم الزيود</span></p>
+                    </div>
+                    <a href="#" class="btn-mini-download"><i class="fas fa-download"></i> تحميل</a>
+                </div>
+
+                <div class="mini-course-item">
+                    <div class="mini-course-details">
+                        <h4>جغرافيا الصناعة</h4>
+                        <p>بإشراف: <span class="doc-name-edit">د. علي فرغل</span></p>
+                    </div>
+                    <a href="#" class="btn-mini-download"><i class="fas fa-download"></i> تحميل</a>
+                </div>
+
+                <div class="mini-course-item">
+                    <div class="mini-course-details">
+                        <h4>جغرافيا النقل والمواصلات</h4>
+                        <p>بإشراف: <span class="doc-name-edit">د. نجلاء حماد</span></p>
+                    </div>
+                    <a href="#" class="btn-mini-download"><i class="fas fa-download"></i> تحميل</a>
+                </div>
+
+                <div class="mini-course-item">
+                    <div class="mini-course-details">
+                        <h4>التخطيط العمراني</h4>
+                        <p>بإشراف: <span class="doc-name-edit">د. فاطمة الطراونة</span></p>
+                    </div>
+                    <a href="#" class="btn-mini-download"><i class="fas fa-download"></i> تحميل</a>
+                </div>
+
+                <div class="mini-course-item">
+                    <div class="mini-course-details">
+                        <h4>جغرافيا المدن</h4>
+                        <p>بإشراف: <span class="doc-name-edit">د. علي فرغل</span></p>
+                    </div>
+                    <a href="#" class="btn-mini-download"><i class="fas fa-download"></i> تحميل</a>
+                </div>
+
+                <div class="mini-course-item">
+                    <div class="mini-course-details">
+                        <h4>الجيولوجيا التطبيقية</h4>
+                        <p>بإشراف: <span class="doc-name-edit">د. ريم الزيود</span></p>
+                    </div>
+                    <a href="#" class="btn-mini-download"><i class="fas fa-download"></i> تحميل</a>
+                </div>
+
+                <div class="mini-course-item">
+                    <div class="mini-course-details">
+                        <h4>قواعد البيانات المكانية</h4>
+                        <p>بإشراف: <span class="doc-name-edit">د. علي فرغل</span></p>
+                    </div>
+                    <a href="#" class="btn-mini-download"><i class="fas fa-download"></i> تحميل</a>
+                </div>
+
+                <div class="mini-course-item">
+                    <div class="mini-course-details">
+                        <h4>تحليل الشبكات المكانية</h4>
+                        <p>بإشراف: <span class="doc-name-edit">د. نجلاء حماد</span></p>
+                    </div>
+                    <a href="#" class="btn-mini-download"><i class="fas fa-download"></i> تحميل</a>
+                </div>
+
+                <div class="mini-course-item">
+                    <div class="mini-course-details">
+                        <h4>نمذجة البيانات الجغرافية</h4>
+                        <p>بإشراف: <span class="doc-name-edit">د. علي فرغل</span></p>
+                    </div>
+                    <a href="#" class="btn-mini-download"><i class="fas fa-download"></i> تحميل</a>
+                </div>
+
+                <div class="mini-course-item">
+                    <div class="mini-course-details">
+                        <h4>برمجة تطبيقات GIS</h4>
+                        <p>بإشراف: <span class="doc-name-edit">د. علي فرغل</span></p>
+                    </div>
+                    <a href="#" class="btn-mini-download"><i class="fas fa-download"></i> تحميل</a>
+                </div>
+
+                <div class="mini-course-item">
+                    <div class="mini-course-details">
+                        <h4>الطيف الكهرومغناطيسي وتطبيقاته</h4>
+                        <p>بإشراف: <span class="doc-name-edit">د. ريم الزيود</span></p>
+                    </div>
+                    <a href="#" class="btn-mini-download"><i class="fas fa-download"></i> تحميل</a>
+                </div>
+
+                <div class="mini-course-item">
+                    <div class="mini-course-details">
+                        <h4>تفسير صور الأقمار الاصطناعية</h4>
+                        <p>بإشراف: <span class="doc-name-edit">د. ريم الزيود</span></p>
+                    </div>
+                    <a href="#" class="btn-mini-download"><i class="fas fa-download"></i> تحميل</a>
+                </div>
+
+                <div class="mini-course-item">
+                    <div class="mini-course-details">
+                        <h4>المسح الجوي بالطائرات المسيّرة</h4>
+                        <p>بإشراف: <span class="doc-name-edit">د. ريم الزيود</span></p>
+                    </div>
+                    <a href="#" class="btn-mini-download"><i class="fas fa-download"></i> تحميل</a>
+                </div>
+
+                <div class="mini-course-item">
+                    <div class="mini-course-details">
+                        <h4>الجغرافيا السياسية</h4>
+                        <p>بإشراف: <span class="doc-name-edit">د. فاطمة الطراونة</span></p>
+                    </div>
+                    <a href="#" class="btn-mini-download"><i class="fas fa-download"></i> تحميل</a>
+                </div>
+
+                <div class="mini-course-item">
+                    <div class="mini-course-details">
+                        <h4>جغرافيا الشرق الأوسط</h4>
+                        <p>بإشراف: <span class="doc-name-edit">د. فاطمة الطراونة</span></p>
+                    </div>
+                    <a href="#" class="btn-mini-download"><i class="fas fa-download"></i> تحميل</a>
+                </div>
+
+                <div class="mini-course-item">
+                    <div class="mini-course-details">
+                        <h4>البيئة والتنمية المستدامة</h4>
+                        <p>بإشراف: <span class="doc-name-edit">د. فاطمة الطراونة</span></p>
+                    </div>
+                    <a href="#" class="btn-mini-download"><i class="fas fa-download"></i> تحميل</a>
+                </div>
+
+                <div class="mini-course-item">
+                    <div class="mini-course-details">
+                        <h4>إدارة الكوارث الطبيعية</h4>
+                        <p>بإشراف: <span class="doc-name-edit">د. نجلاء حماد</span></p>
+                    </div>
+                    <a href="#" class="btn-mini-download"><i class="fas fa-download"></i> تحميل</a>
+                </div>
+
+                <div class="mini-course-item">
+                    <div class="mini-course-details">
+                        <h4>تقييم الأثر البيئي</h4>
+                        <p>بإشراف: <span class="doc-name-edit">د. نجلاء حماد</span></p>
+                    </div>
+                    <a href="#" class="btn-mini-download"><i class="fas fa-download"></i> تحميل</a>
+                </div>
+
+                <div class="mini-course-item">
+                    <div class="mini-course-details">
+                        <h4>الإحصاء الجغرافي</h4>
+                        <p>بإشراف: <span class="doc-name-edit">د. علي فرغل</span></p>
+                    </div>
+                    <a href="#" class="btn-mini-download"><i class="fas fa-download"></i> تحميل</a>
+                </div>
+
+                <div class="mini-course-item">
+                    <div class="mini-course-details">
+                        <h4>مناهج البحث الجغرافي</h4>
+                        <p>بإشراف: <span class="doc-name-edit">د. نجلاء حماد</span></p>
+                    </div>
+                    <a href="#" class="btn-mini-download"><i class="fas fa-download"></i> تحميل</a>
+                </div>
+
+                <div class="mini-course-item">
+                    <div class="mini-course-details">
+                        <h4>الجغرافيا الاقتصادية</h4>
+                        <p>بإشراف: <span class="doc-name-edit">د. علي فرغل</span></p>
+                    </div>
+                    <a href="#" class="btn-mini-download"><i class="fas fa-download"></i> تحميل</a>
+                </div>
+
+                <div class="mini-course-item">
+                    <div class="mini-course-details">
+                        <h4>مشروع التخرج (GIS)</h4>
+                        <p>بإشراف: <span class="doc-name-edit">د. ريم الزيود</span></p>
+                    </div>
+                    <a href="#" class="btn-mini-download"><i class="fas fa-download"></i> تحميل</a>
+                </div>
+
+                <div class="mini-course-item">
+                    <div class="mini-course-details">
+                        <h4>مشروع التخرج (جغرافيا)</h4>
+                        <p>بإشراف: <span class="doc-name-edit">د. فاطمة الطراونة</span></p>
+                    </div>
+                    <a href="#" class="btn-mini-download"><i class="fas fa-download"></i> تحميل</a>
+                </div>
+
+                <div class="mini-course-item">
+                    <div class="mini-course-details">
+                        <h4>التدريب الميداني (1)</h4>
+                        <p>بإشراف: <span class="doc-name-edit">د. نجلاء حماد</span></p>
+                    </div>
+                    <a href="#" class="btn-mini-download"><i class="fas fa-download"></i> تحميل</a>
+                </div>
+
+                <div class="mini-course-item">
+                    <div class="mini-course-details">
+                        <h4>التدريب الميداني (2)</h4>
+                        <p>بإشراف: <span class="doc-name-edit">د. علي فرغل</span></p>
+                    </div>
+                    <a href="#" class="btn-mini-download"><i class="fas fa-download"></i> تحميل</a>
+                </div>
+
+                <div class="mini-course-item">
+                    <div class="mini-course-details">
+                        <h4>مسح الأراضي والملكية العقارية</h4>
+                        <p>بإشراف: <span class="doc-name-edit">د. ريم الزيود</span></p>
+                    </div>
+                    <a href="#" class="btn-mini-download"><i class="fas fa-download"></i> تحميل</a>
+                </div>
+
+                </div>
+        </div>
+    </div>
+</div>
+
+<div class="ai-chat-container">
+    <div class="ai-chat-window" id="aiChatWindow">
+        <div class="ai-chat-header">
+            <div class="ai-bot-info">
+                <i class="fas fa-robot ai-header-icon"></i>
+                <div>
+                    <h4>مساعد FesaGeo الذكي</h4>
+                    <span>متصل الآن ومستعد لمساعدتك 🧭</span>
+                </div>
+            </div>
+            <button class="ai-close-btn" onclick="toggleAiChat()"><i class="fas fa-times"></i></button>
+        </div>
+        
+        <div class="ai-chat-messages" id="aiChatMessages">
+            <div class="ai-msg bot">
+                مرحباً بك في قسم الجغرافيا ونظم المعلومات! أنا مساعدك الذكي، كيف يمكنني مساعدتك اليوم في تصفح الموقع أو المواد؟ 🗺️✨
+            </div>
+        </div>
+        
+        <div class="ai-chat-input-area">
+            <input type="text" id="aiChatInput" placeholder="اكتب سؤالك هنا..." onkeypress="handleAiKeyPress(event)">
+            <button onclick="sendAiMessage()" id="aiSendBtn"><i class="fas fa-paper-plane"></i></button>
+        </div>
+    </div>
+
+    <button class="ai-chat-trigger" onclick="toggleAiChat()" id="aiChatTrigger">
+        <i class="fas fa-robot animate-bounce"></i>
+        <span class="ai-tooltip">اسأل الذكاء الاصطناعي</span>
+    </button>
+</div>
+
+<style>
+/* زر استعراض المواد الكبير السفلي وتوسيطه */
+.main-course-trigger-container {
+    text-align: center;
+    margin: 50px auto 30px;
+    width: 100%;
+}
+.btn-main-courses {
+    background: rgba(0, 242, 255, 0.04);
+    border: 1px solid rgba(0, 242, 255, 0.4);
+    color: #00f2ff;
+    padding: 14px 35px;
+    font-size: 16px;
+    font-weight: bold;
+    font-family: 'Tajawal', sans-serif;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0 0 15px rgba(0, 242, 255, 0.1);
+}
+.btn-main-courses:hover {
+    background: linear-gradient(135deg, #0ea5e9, #00f2ff);
+    color: #050c16;
+    box-shadow: 0 0 25px rgba(0, 242, 255, 0.5);
+    transform: translateY(-2px);
+}
+
+/* النوافذ المنبثقة والتأثير الزجاجي الشفاف الداكن */
+.popup-overlay {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100vw; height: 100vh;
+    background: rgba(3, 8, 16, 0.85);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.popup-overlay.active { opacity: 1; pointer-events: auto; }
+
+.popup-box {
+    background: rgba(10, 25, 47, 0.98);
+    border: 1px solid rgba(0, 242, 255, 0.4);
+    box-shadow: 0 0 35px rgba(0, 242, 255, 0.25);
+    width: 90%;
+    max-width: 460px;
+    padding: 35px 25px;
+    border-radius: 20px;
+    text-align: center;
+    transform: scale(0.9);
+    transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    box-sizing: border-box;
+}
+
+/* النافذة المنبثقة الكبيرة بـ سكرول بار للمواد */
+.popup-box.large-box {
+    max-width: 850px;
+    height: 75vh;
+    display: flex;
+    flex-direction: column;
+    padding: 30px 20px 20px;
+}
+
+.popup-close {
+    position: absolute;
+    top: 15px; left: 15px;
+    background: transparent; border: none;
+    color: #94a3b8; font-size: 22px;
+    cursor: pointer; z-index: 10;
+    transition: 0.2s;
+}
+.popup-close:hover { color: #ef4444; }
+
+.popup-icon { font-size: 36px; color: #00f2ff; margin-bottom: 12px; }
+.popup-box h3 { margin: 0 0 15px 0; font-size: 18px; font-weight: bold; color: #fff; }
+.popup-text { color: #94a3b8; font-size: 14px; line-height: 1.6; margin: 0; }
+
+.courses-scroll-container {
+    flex: 1;
+    overflow-y: auto;
+    margin-top: 15px;
+    padding-left: 8px;
+}
+
+.courses-table-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 12px;
+    text-align: right;
+}
+
+/* تصميم عناصر القائمة للمواد الـ 40 بخط صغير ومنظم */
+.mini-course-item {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+    padding: 10px 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: 0.22s;
+}
+.mini-course-item:hover {
+    border-color: rgba(0, 242, 255, 0.35);
+    background: rgba(0, 242, 255, 0.02);
+}
+
+.mini-course-details h4 {
+    margin: 0 0 2px 0;
+    font-size: 13px;
+    color: #fff;
+    font-weight: bold;
+}
+.mini-course-details p {
+    margin: 0;
+    font-size: 11px;
+    color: #94a3b8;
+}
+.doc-name-edit { color: #64ffda; font-weight: 500; }
+
+.btn-mini-download {
+    background: rgba(14, 165, 233, 0.15);
+    color: #00f2ff;
+    border: 1px solid rgba(0, 242, 255, 0.2);
+    padding: 5px 12px;
+    font-size: 11px;
+    font-weight: bold;
+    border-radius: 6px;
+    text-decoration: none;
+    cursor: pointer;
+    transition: 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+.btn-mini-download:hover {
+    background: #00f2ff;
+    color: #0a192f;
+    box-shadow: 0 0 10px rgba(0, 242, 255, 0.3);
+}
+
+/* تصميم شريط السكرول بار المخصص */
+.courses-scroll-container::-webkit-scrollbar { width: 5px; }
+.courses-scroll-container::-webkit-scrollbar-track { background: rgba(0,0,0,0.1); }
+.courses-scroll-container::-webkit-scrollbar-thumb { background: rgba(0, 242, 255, 0.2); border-radius: 4px; }
+.courses-scroll-container::-webkit-scrollbar-thumb:hover { background: #00f2ff; }
+
+/* برمجيات شات الذكاء الاصطناعي والتنسيقات */
+.ai-chat-container {
+    position: fixed;
+    bottom: 25px;
+    right: 25px;
+    z-index: 9999;
+    font-family: 'Tajawal', sans-serif;
+    direction: rtl;
+}
+.ai-chat-trigger {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #0ea5e9, #00f2ff);
+    border: none;
+    color: #0a192f;
+    font-size: 26px;
+    cursor: pointer;
+    box-shadow: 0 0 20px rgba(0, 242, 255, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+}
+.ai-chat-trigger:hover {
+    transform: scale(1.1) rotate(5deg);
+    box-shadow: 0 0 30px rgba(0, 242, 255, 0.9);
+}
+.ai-tooltip {
+    position: absolute;
+    right: 75px;
+    background: rgba(10, 25, 47, 0.9);
+    color: #00f2ff;
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: bold;
+    white-space: nowrap;
+    border: 1px solid rgba(0, 242, 255, 0.3);
+    opacity: 0;
+    pointer-events: none;
+    transition: 0.3s;
+}
+.ai-chat-trigger:hover .ai-tooltip { opacity: 1; }
+.ai-chat-window {
+    position: absolute;
+    bottom: 75px;
+    right: 0;
+    width: 360px;
+    height: 480px;
+    background: rgba(10, 25, 47, 0.95);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border: 1px solid rgba(0, 242, 255, 0.25);
+    border-radius: 20px;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.5);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    transform: translateY(20px) scale(0.95);
+    opacity: 0;
+    pointer-events: none;
+    transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.ai-chat-window.open { transform: translateY(0) scale(1); opacity: 1; pointer-events: auto; }
+.ai-chat-header { background: rgba(255, 255, 255, 0.05); padding: 15px; border-bottom: 1px solid rgba(255, 255, 255, 0.1); display: flex; justify-content: space-between; align-items: center; }
+.ai-bot-info { display: flex; align-items: center; gap: 12px; }
+.ai-header-icon { font-size: 24px; color: #00f2ff; }
+.ai-bot-info h4 { margin: 0; color: #fff; font-size: 14px; font-weight: 700; }
+.ai-bot-info span { font-size: 11px; color: #64ffda; display: block; margin-top: 2px; }
+.ai-close-btn { background: transparent; border: none; color: #cbd5e1; font-size: 18px; cursor: pointer; transition: 0.2s; }
+.ai-close-btn:hover { color: #ef4444; }
+.ai-chat-messages { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; }
+.ai-msg { max-width: 80%; padding: 10px 14px; border-radius: 15px; font-size: 13px; line-height: 1.5; color: #fff; }
+.ai-msg.bot { background: rgba(255, 255, 255, 0.08); align-self: flex-start; border-bottom-right-radius: 4px; border: 1px solid rgba(255,255,255,0.05); }
+.ai-msg.user { background: #0ea5e9; align-self: flex-end; border-bottom-left-radius: 4px; }
+.ai-chat-input-area { padding: 12px; background: rgba(0, 0, 0, 0.2); display: flex; gap: 8px; border-top: 1px solid rgba(255, 255, 255, 0.05); }
+.ai-chat-input-area input { flex: 1; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); padding: 10px 15px; border-radius: 10px; color: #fff; font-size: 13px; font-family: inherit; }
+.ai-chat-input-area input:focus { outline: none; border-color: #00f2ff; }
+.ai-chat-input-area button { background: #00f2ff; color: #0a192f; border: none; width: 38px; border-radius: 10px; cursor: pointer; font-size: 14px; transition: 0.2s; }
+.ai-chat-input-area button:hover { background: #38bdf8; transform: scale(1.05); }
+.ai-chat-input-area input:disabled { opacity: 0.5; }
+.ai-chat-input-area button:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+/* مؤشر "يكتب الآن..." أثناء انتظار رد Flowise الحقيقي */
+.ai-msg.typing { background: rgba(255, 255, 255, 0.08); align-self: flex-start; border-bottom-right-radius: 4px; border: 1px solid rgba(255,255,255,0.05); display: flex; gap: 4px; align-items: center; padding: 12px 16px; }
+.ai-msg.typing span { width: 6px; height: 6px; border-radius: 50%; background: #64ffda; animation: typingDot 1.2s infinite ease-in-out; }
+.ai-msg.typing span:nth-child(2){ animation-delay: 0.2s; }
+.ai-msg.typing span:nth-child(3){ animation-delay: 0.4s; }
+@keyframes typingDot{ 0%, 60%, 100%{ opacity:0.3; transform:translateY(0); } 30%{ opacity:1; transform:translateY(-3px); } }
+
+@media (max-width: 400px) {
+    .ai-chat-window { width: calc(100vw - 40px); right: -10px; height: 420px; }
+    .ai-tooltip { display: none; }
+}
+</style>
+
+<script>
+/* sessionId ثابت ومشترك بكل صفحات الموقع (محفوظ بـ localStorage)
+   هذا يضمن استمرارية المحادثة لو الطالب جاي من index.html أو سيروح لها بعدين */
+function getOrCreateSessionId(){
+  let sid = localStorage.getItem('fesageo_chat_session');
+  if(!sid){
+    sid = 'fesageo-' + crypto.randomUUID();
+    localStorage.setItem('fesageo_chat_session', sid);
+  }
+  return sid;
+}
+window.__flowiseSessionId = getOrCreateSessionId();
+</script>
+
+<script>
+// برمجيات فتح وإغلاق النوافذ المنبثقة التفاعلية (Popups)
+function openMessagePopup(name, message) {
+    document.getElementById('popupDocName').innerText = name;
+    document.getElementById('popupDocText').innerText = message;
+    document.getElementById('messagePopup').classList.add('active');
+}
+function closeMessagePopup() {
+    document.getElementById('messagePopup').classList.remove('active');
+}
+
+function openCoursesPopup() {
+    document.getElementById('coursesPopup').classList.add('active');
+}
+function closeCoursesPopup() {
+    document.getElementById('coursesPopup').classList.remove('active');
+}
+
+// تشغيل وإغلاق شات الذكاء الاصطناعي
+function toggleAiChat() {
+    const win = document.getElementById('aiChatWindow');
+    win.classList.toggle('open');
+}
+
+function handleAiKeyPress(e) {
+    if (e.key === 'Enter') {
+        sendAiMessage();
+    }
+}
+
+/* استرجاع الرسائل المحفوظة محلياً وعرضها عند فتح الصفحة
+   (يعطي إحساس استمرارية المحادثة من index.html أو من زيارة سابقة) */
+const STORAGE_KEY = 'fesageo_chat_history';
+
+function loadChatHistory(){
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if(!saved) return;
+    try{
+        const history = JSON.parse(saved);
+        const msgContainer = document.getElementById('aiChatMessages');
+        if(history.length > 0){
+            msgContainer.innerHTML = '';
+            history.forEach(item => appendMessage(item.role, item.text, false));
+        }
+    } catch(e){ /* تاريخ تالف، نتجاهله ونبدأ بشكل طبيعي */ }
+}
+
+function saveChatHistory(role, text){
+    const saved = localStorage.getItem(STORAGE_KEY);
+    let history = [];
+    try{ history = saved ? JSON.parse(saved) : []; } catch(e){ history = []; }
+    history.push({role, text});
+    if(history.length > 30) history = history.slice(-30);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(history));
+}
+
+function appendMessage(role, text, save = true){
+    const msgContainer = document.getElementById('aiChatMessages');
+    const div = document.createElement('div');
+    div.className = 'ai-msg ' + role;
+    div.innerText = text;
+    msgContainer.appendChild(div);
+    msgContainer.scrollTop = msgContainer.scrollHeight;
+    if(save) saveChatHistory(role, text);
+}
+
+function showTyping(){
+    const msgContainer = document.getElementById('aiChatMessages');
+    const div = document.createElement('div');
+    div.className = 'ai-msg typing';
+    div.id = 'typingIndicator';
+    div.innerHTML = '<span></span><span></span><span></span>';
+    msgContainer.appendChild(div);
+    msgContainer.scrollTop = msgContainer.scrollHeight;
+}
+function hideTyping(){
+    const t = document.getElementById('typingIndicator');
+    if(t) t.remove();
+}
+
+async function sendAiMessage() {
+    const input = document.getElementById('aiChatInput');
+    const sendBtn = document.getElementById('aiSendBtn');
+    const msgText = input.value.trim();
+    if (!msgText) return;
+
+    appendMessage('user', msgText);
+    input.value = '';
+    input.disabled = true;
+    sendBtn.disabled = true;
+    showTyping();
+
+    try {
+        const response = await fetch(
+            `https://cloud.flowiseai.com/api/v1/prediction/130c0c6e-732f-43d4-9cb7-fc5b2a528f4f`,
+            {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    question: msgText,
+                    overrideConfig: {
+                        sessionId: window.__flowiseSessionId
+                    }
+                })
+            }
+        );
+
+        if(!response.ok) throw new Error('فشل الاتصال بالخادم');
+
+        const data = await response.json();
+        const botReply = data.text || data.answer || "عذراً، لم أستطع فهم ذلك. ممكن تعيد صياغة سؤالك؟";
+
+        hideTyping();
+        appendMessage('bot', botReply);
+
+    } catch(err) {
+        console.error('خطأ بالاتصال بـ Flowise:', err);
+        hideTyping();
+        appendMessage('bot', 'عذراً، حدث خطأ بالاتصال. تأكد من اتصالك بالإنترنت وحاول مرة أخرى. 🔌');
+    } finally {
+        input.disabled = false;
+        sendBtn.disabled = false;
+        input.focus();
+    }
+}
+
+// تحميل المحادثة السابقة عند فتح الصفحة
+loadChatHistory();
+
+// إغلاق أي نافذة منبثقة عند الضغط على المساحة الشفافة الخارجية
+window.onclick = function(event) {
+    if (event.target.classList.contains('popup-overlay')) {
+        event.target.classList.remove('active');
+    }
+}
+</script>
+
+</body>
+</html>
