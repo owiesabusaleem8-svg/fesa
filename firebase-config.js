@@ -1,10 +1,24 @@
-// استيراد المكتبات الأساسية من الإصدار الذي جاءك بالظبط
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js";
-import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-analytics.js";
-// استيراد دوال قاعدة البيانات Firestore للاستخدام في الموقع
-import { getFirestore, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js";
+// =========================================================
+// firebase-config.js
+// ملف الاتصال الموحّد بمشروع Firebase - يُستورد من أي صفحة تحتاج بيانات
+// =========================================================
 
-// إعدادات مشروعك الرسمية الكاملة
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js";
+import {
+  getFirestore,
+  collection,
+  addDoc,
+  getDocs,
+  doc,
+  getDoc,
+  updateDoc,
+  deleteDoc,
+  orderBy,
+  query,
+  where
+} from "https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js";
+
+// إعدادات مشروع Fesageo على Firebase
 const firebaseConfig = {
   apiKey: "AIzaSyCM8G90ijGh-05WBJOgLKgM0oscieDRiNs",
   authDomain: "fesageo-cf82b.firebaseapp.com",
@@ -15,10 +29,21 @@ const firebaseConfig = {
   measurementId: "G-XN2QXPBQMH"
 };
 
-// تهيئة تفعيل الخدمات
+// تهيئة التطبيق وقاعدة البيانات
 const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
-const db = getFirestore(app); // تفعيل قاعدة البيانات
+const db = getFirestore(app);
 
-// تصدير المتغيرات لكي نستخدمها في باقي صفحات الموقع
-export { db, collection, addDoc, getDocs };
+// تصدير كل الدوال والمتغيرات اللي تحتاجها صفحات الموقع المختلفة
+export {
+  db,
+  collection,
+  addDoc,
+  getDocs,
+  doc,
+  getDoc,
+  updateDoc,
+  deleteDoc,
+  orderBy,
+  query,
+  where
+};
