@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>تسجيل الدخول | Fesageo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg-deep:#070b14;
+    --teal:#00d9c0;
+    --teal-dim: rgba(0,217,192,0.25);
+    --gold:#d4af6a;
+    --gold-bright:#f0c878;
+    --gold-dim: rgba(212,175,106,0.35);
+    --ink:#eaf2f4;
+    --ink-dim:#9fb3c0;
+  }
+  *{box-sizing:border-box;}
+  html,body{
+    margin:0;padding:0;
+    background:var(--bg-deep);
+    color:var(--ink);
+    font-family:'Tajawal',sans-serif;
+    overflow:hidden;
+    width:100%;
+    height:100%;
+  }
+  #stage{
+    position:relative;
+    width:100%;
+    height:100vh;
+    overflow:hidden;
+  }
+  #stars-canvas, #globe-canvas{
+    position:absolute; inset:0;
+    width:100%; height:100%;
+  }
+  #stars-canvas{ z-index:0; }
+  #globe-canvas{ z-index:1; }
+
+  /* ============ بطاقة تسجيل الدخول ============ */
+  .login-wrap{
+    position:relative;
+    z-index:5;
+    width:100%;
+    height:100%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+  }
+
+  .login-card{
+    width:min(400px, 92vw);
+    background:linear-gradient(165deg, rgba(19,16,8,.55), rgba(7,11,20,.7));
+    border:1.4px solid var(--gold-dim);
+    border-radius:20px;
+    padding:38px 32px 32px;
+    backdrop-filter:blur(10px);
+    box-shadow:0 30px 80px rgba(0,0,0,.5), 0 0 50px rgba(212,175,106,0.12);
+    text-align:center;
+  }
+
+  .logo-box{
+    width:min(220px, 70%);
+    margin:0 auto 16px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+  .logo-box img{
+    width:100%;
+    height:auto;
+    filter:drop-shadow(0 0 18px rgba(212,175,106,0.35));
+  }
+
+  .login-eyebrow{
+    font-size:12px;
+    letter-spacing:.16em;
+    color:var(--gold);
+    text-transform:uppercase;
+    font-weight:600;
+    opacity:.9;
+  }
+  .login-title{
+    margin:6px 0 0;
+    font-size:23px;
+    font-weight:800;
+    background:linear-gradient(90deg, #fff, var(--gold-bright));
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+  }
+  .login-sub{
+    margin:8px 0 26px;
+    font-size:13px;
+    color:var(--ink-dim);
+    line-height:1.7;
+  }
+
+  .field-group{
+    margin-bottom:16px;
+    text-align:right;
+  }
+  .field-label{
+    display:block;
+    font-size:12.5px;
+    color:var(--ink-dim);
+    margin-bottom:6px;
+    font-weight:500;
+  }
+  .field-input{
+    width:100%;
+    background:rgba(255,255,255,0.04);
+    border:1.4px solid rgba(255,255,255,0.1);
+    border-radius:10px;
+    padding:12px 14px;
+    color:#fff;
+    font-size:14px;
+    font-family:inherit;
+    transition:border-color .2s ease, box-shadow .2s ease;
+  }
+  .field-input:focus{
+    outline:none;
+    border-color:var(--gold);
+    box-shadow:0 0 0 3px rgba(212,175,106,0.15);
+  }
+  .field-input::placeholder{ color:rgba(255,255,255,0.3); }
+
+  .login-btn{
+    width:100%;
+    margin-top:8px;
+    padding:13px;
+    border-radius:10px;
+    border:none;
+    background:linear-gradient(135deg, var(--gold), #b8893f);
+    color:#1a1304;
+    font-family:inherit;
+    font-size:15px;
+    font-weight:700;
+    cursor:pointer;
+    transition:transform .2s ease, box-shadow .2s ease;
+  }
+  .login-btn:hover{
+    transform:translateY(-1px);
+    box-shadow:0 8px 24px rgba(212,175,106,0.35);
+  }
+  .login-btn:disabled{
+    opacity:.6;
+    cursor:not-allowed;
+    transform:none;
+  }
+
+  .error-msg{
+    margin-top:14px;
+    padding:10px 14px;
+    border-radius:8px;
+    background:rgba(220,60,60,0.1);
+    border:1px solid rgba(220,60,60,0.3);
+    color:#ff8a8a;
+    font-size:12.5px;
+    line-height:1.6;
+    display:none;
+  }
+  .error-msg.show{ display:block; }
+
+  .success-msg{
+    margin-top:14px;
+    padding:14px;
+    border-radius:8px;
+    background:rgba(0,217,192,0.08);
+    border:1px solid var(--teal-dim);
+    color:var(--teal);
+    font-size:13.5px;
+    line-height:1.7;
+    display:none;
+  }
+  .success-msg.show{ display:block; }
+
+  .back-home{
+    position:fixed;
+    top:24px; right:24px;
+    z-index:6;
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    font-size:13px;
+    color:var(--ink-dim);
+    text-decoration:none;
+    background:rgba(10,17,32,.55);
+    border:1px solid rgba(255,255,255,0.08);
+    backdrop-filter:blur(10px);
+    border-radius:999px;
+    padding:8px 16px;
+    transition:border-color .2s ease, color .2s ease;
+  }
+  .back-home:hover{ border-color:var(--gold-dim); color:var(--gold); }
+  .back-home svg{ width:13px; height:13px; transform:rotate(180deg); }
+
+  .login-form.loading .field-input,
+  .login-form.loading .login-btn{ pointer-events:none; }
+
+  @media (max-width:480px){
+    .login-card{ padding:30px 22px 26px; }
+    .back-home{ font-size:11.5px; padding:6px 12px; top:14px; right:14px; }
+  }
+</style>
+</head>
+<body>
+
+<div id="stage">
+  <canvas id="stars-canvas"></canvas>
+  <canvas id="globe-canvas"></canvas>
+
+  <div class="login-wrap">
+    <div class="login-card">
+      <div class="logo-box">
+        <img src="https://i.postimg.cc/9F9JcVQF/DBB2E3B1-3E84-48DE-BB39-A61FE97CE3EE.png" alt="شعار Fesageo - التخصص الجغرافي">
+      </div>
+      <div class="login-eyebrow">Fesageo · لوحة الإدارة</div>
+      <h1 class="login-title">تسجيل الدخول</h1>
+      <p class="login-sub">هذه المنطقة مخصصة لفريق إدارة الموقع وأعضاء هيئة التدريس</p>
+
+      <form id="loginForm" class="login-form">
+        <div class="field-group">
+          <label class="field-label" for="emailInput">البريد الإلكتروني</label>
+          <input type="email" id="emailInput" class="field-input" placeholder="example@email.com" required autocomplete="username">
+        </div>
+        <div class="field-group">
+          <label class="field-label" for="passwordInput">كلمة المرور</label>
+          <input type="password" id="passwordInput" class="field-input" placeholder="••••••••" required autocomplete="current-password">
+        </div>
+        <button type="submit" class="login-btn" id="loginBtn">تسجيل الدخول</button>
+      </form>
+
+      <div class="error-msg" id="errorMsg"></div>
+      <div class="success-msg" id="successMsg"></div>
+    </div>
+  </div>
+</div>
+
+<a href="student-life.html" class="back-home">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+  العودة للموقع
+</a>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-auth.js";
+import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js";
+
+/* نفس مفاتيح مشروع Firebase الموجودة بـ firebase-config.js
+   (مكررة هنا لأن Authentication يحتاج تهيئة منفصلة عن Firestore) */
+const firebaseConfig = {
+  apiKey: "AIzaSyCM8G90ijGh-05WBJOgLKgM0oscieDRiNs",
+  authDomain: "fesageo-cf82b.firebaseapp.com",
+  projectId: "fesageo-cf82b",
+  storageBucket: "fesageo-cf82b.firebasestorage.app",
+  messagingSenderId: "817340126615",
+  appId: "1:817340126615:web:d115544a1e5b4354b8a0d2",
+  measurementId: "G-XN2QXPBQMH"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+/* ---------- خلفية النجوم ---------- */
+(function starsBG(){
+  const c = document.getElementById('stars-canvas');
+  const ctx = c.getContext('2d');
+  let stars = [];
+  function resize(){
+    c.width = innerWidth; c.height = innerHeight;
+    stars = [];
+    const count = Math.floor((innerWidth*innerHeight)/4500);
+    for(let i=0;i<count;i++){
+      stars.push({
+        x:Math.random()*c.width, y:Math.random()*c.height,
+        r:Math.random()*1.3+0.2, a:Math.random()*0.6+0.2, tw:Math.random()*0.02+0.005
+      });
+    }
+  }
+  function draw(){
+    ctx.clearRect(0,0,c.width,c.height);
+    ctx.fillStyle = '#070b14';
+    ctx.fillRect(0,0,c.width,c.height);
+    for(const s of stars){
+      s.a += s.tw;
+      const alpha = 0.4 + Math.sin(s.a)*0.4;
+      ctx.beginPath();
+      ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
+      ctx.fillStyle = `rgba(220,235,240,${Math.max(0,alpha)})`;
+      ctx.fill();
+    }
+    requestAnimationFrame(draw);
+  }
+  window.addEventListener('resize', resize);
+  resize(); draw();
+})();
+
+/* ---------- الكرة الأرضية الذهبية (Three.js) ---------- */
+const canvas = document.getElementById('globe-canvas');
+const renderer = new THREE.WebGLRenderer({canvas, antialias:true, alpha:true});
+renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
+renderer.setSize(window.innerWidth, window.innerHeight);
+
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(45, window.innerWidth/window.innerHeight, 0.1, 1000);
+camera.position.set(0,0,8.5);
+
+const ambient = new THREE.AmbientLight(0xffe3a8, 0.55);
+scene.add(ambient);
+const keyLight = new THREE.DirectionalLight(0xf0c878, 1.1);
+keyLight.position.set(5,3,5);
+scene.add(keyLight);
+const rimLight = new THREE.DirectionalLight(0x6f5526, 0.6);
+rimLight.position.set(-6,-2,-4);
+scene.add(rimLight);
+
+function buildEarthTexture(){
+  const w=1024,h=512;
+  const cv=document.createElement('canvas');
+  cv.width=w; cv.height=h;
+  const ctx=cv.getContext('2d');
+  const ocean = ctx.createLinearGradient(0,0,0,h);
+  ocean.addColorStop(0,'#1a1408');
+  ocean.addColorStop(0.5,'#241c0d');
+  ocean.addColorStop(1,'#120e06');
+  ctx.fillStyle=ocean;
+  ctx.fillRect(0,0,w,h);
+
+  function blob(cx,cy,r,col){
+    ctx.beginPath();
+    const points=14;
+    ctx.moveTo(cx+r,cy);
+    for(let i=1;i<=points;i++){
+      const ang=(i/points)*Math.PI*2;
+      const rr=r*(0.7+Math.random()*0.6);
+      ctx.lineTo(cx+Math.cos(ang)*rr, cy+Math.sin(ang)*rr*0.6);
+    }
+    ctx.closePath();
+    ctx.fillStyle=col;
+    ctx.fill();
+  }
+  const landColors=['#3d2f12','#4a3818','#332810','#5a431f'];
+  const continents=[
+    [150,150,90],[180,260,70],[330,180,110],[420,300,60],
+    [560,140,100],[600,260,80],[760,170,120],[820,330,70],
+    [900,210,90],[260,380,60],[680,400,55],[480,120,50]
+  ];
+  continents.forEach(([x,y,r],i)=>{
+    blob(x,y,r, landColors[i%landColors.length]);
+  });
+  ctx.strokeStyle='rgba(240,200,120,0.08)';
+  ctx.lineWidth=1;
+  for(let i=0;i<=12;i++){
+    ctx.beginPath(); ctx.moveTo(i*(w/12),0); ctx.lineTo(i*(w/12),h); ctx.stroke();
+  }
+  for(let i=0;i<=6;i++){
+    ctx.beginPath(); ctx.moveTo(0,i*(h/6)); ctx.lineTo(w,i*(h/6)); ctx.stroke();
+  }
+  return new THREE.CanvasTexture(cv);
+}
+
+const earthTex = buildEarthTexture();
+const globeGeo = new THREE.SphereGeometry(2.4, 64, 64);
+const globeMat = new THREE.MeshPhongMaterial({
+  map: earthTex,
+  shininess: 14,
+  specular: new THREE.Color(0x3a2f10),
+  emissive: new THREE.Color(0x2a1f08),
+  emissiveIntensity:0.2
+});
+const globe = new THREE.Mesh(globeGeo, globeMat);
+scene.add(globe);
+
+// غلاف توهج ذهبي
+const glowGeo = new THREE.SphereGeometry(2.62, 64, 64);
+const glowMat = new THREE.ShaderMaterial({
+  uniforms:{ glowColor:{value:new THREE.Color(0xd4af6a)} },
+  vertexShader:`
+    varying vec3 vNormal;
+    void main(){
+      vNormal = normalize(normalMatrix * normal);
+      gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0);
+    }
+  `,
+  fragmentShader:`
+    uniform vec3 glowColor;
+    varying vec3 vNormal;
+    void main(){
+      float intensity = pow(0.62 - dot(vNormal, vec3(0,0,1.0)), 3.0);
+      gl_FragColor = vec4(glowColor, intensity * 1.1);
+    }
+  `,
+  side: THREE.BackSide,
+  blending: THREE.AdditiveBlending,
+  transparent: true
+});
+const glow = new THREE.Mesh(glowGeo, glowMat);
+scene.add(glow);
+
+let targetRotY = 0;
+window.addEventListener('mousemove', (e)=>{
+  const nx = (e.clientX / window.innerWidth) * 2 - 1;
+  targetRotY = nx * 0.3;
+});
+
+let currentRotY = 0;
+let globalAngle = 0;
+function animate(){
+  requestAnimationFrame(animate);
+  globalAngle += 0.0022;
+  currentRotY += (targetRotY - currentRotY) * 0.04;
+
+  globe.rotation.y = currentRotY + globalAngle;
+  glow.rotation.copy(globe.rotation);
+
+  renderer.render(scene, camera);
+}
+animate();
+
+window.addEventListener('resize', ()=>{
+  camera.aspect = window.innerWidth/window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+});
+
+/* ---------- منطق تسجيل الدخول ---------- */
+const form = document.getElementById('loginForm');
+const errorMsg = document.getElementById('errorMsg');
+const successMsg = document.getElementById('successMsg');
+const loginBtn = document.getElementById('loginBtn');
+
+function showError(msg){
+  errorMsg.textContent = msg;
+  errorMsg.classList.add('show');
+  successMsg.classList.remove('show');
+}
+function hideMessages(){
+  errorMsg.classList.remove('show');
+  successMsg.classList.remove('show');
+}
+
+form.addEventListener('submit', async (e)=>{
+  e.preventDefault();
+  hideMessages();
+
+  const email = document.getElementById('emailInput').value.trim();
+  const password = document.getElementById('passwordInput').value;
+
+  form.classList.add('loading');
+  loginBtn.disabled = true;
+  loginBtn.textContent = 'جاري التحقق...';
+
+  try{
+    const userCredential = await signInWithEmailAndPassword(auth, email, password);
+    const userEmail = userCredential.user.email;
+
+    // نتحقق هل هذا البريد مسجّل بمجموعة "admin-emails" (يعني دكتور بصلاحية محدودة)
+    // لو غير موجود، يعني مسؤول كامل (أنت أو الطالب الثاني) - رسالة عامة
+    let welcomeText = 'أهلاً بك، تم تسجيل الدخول بنجاح ✅';
+
+    try{
+      const adminDocRef = doc(db, "admin-emails", userEmail);
+      const adminDocSnap = await getDoc(adminDocRef);
+
+      if(adminDocSnap.exists()){
+        const doctorKey = adminDocSnap.data().doctorKey;
+        // نجيب اسم الدكتور الحقيقي من مجموعة doctors-page
+        const doctorDocRef = doc(db, "doctors-page", doctorKey);
+        const doctorDocSnap = await getDoc(doctorDocRef);
+
+        if(doctorDocSnap.exists() && doctorDocSnap.data().name){
+          welcomeText = `أهلاً بك يا ${doctorDocSnap.data().name} 👋 — يمكنك تعديل بياناتك الخاصة من هنا.`;
+        } else {
+          welcomeText = 'أهلاً بك 👋 — تم تسجيل الدخول بنجاح.';
+        }
+      }
+    } catch(lookupErr){
+      // لو فشل التحقق من admin-emails لأي سبب (مثلاً القاعدة الأمنية)، نكمل بالرسالة العامة
+      console.warn('تعذّر التحقق من نوع الحساب، عرض رسالة عامة:', lookupErr);
+    }
+
+    successMsg.textContent = welcomeText + ' (لوحة الإدارة الكاملة قيد الإنشاء حالياً)';
+    successMsg.classList.add('show');
+    form.reset();
+
+  } catch(err){
+    console.error('خطأ تسجيل الدخول:', err.code);
+
+    // رسائل واضحة بدون كشف تفاصيل تقنية حساسة
+    if(err.code === 'auth/invalid-credential' || err.code === 'auth/wrong-password' || err.code === 'auth/user-not-found'){
+      showError('البريد الإلكتروني أو كلمة المرور غير صحيحة.');
+    } else if(err.code === 'auth/invalid-email'){
+      showError('صيغة البريد الإلكتروني غير صحيحة.');
+    } else if(err.code === 'auth/too-many-requests'){
+      showError('عدد محاولات كثير، حاول مرة أخرى بعد قليل.');
+    } else {
+      showError('تعذّر تسجيل الدخول، تأكد من اتصالك بالإنترنت وحاول مرة أخرى.');
+    }
+  } finally {
+    form.classList.remove('loading');
+    loginBtn.disabled = false;
+    loginBtn.textContent = 'تسجيل الدخول';
+  }
+});
+</script>
+</body>
+</html>
