@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>فجر الإسلام</title>
+<meta name="description" content="موشن جرافيك مدته دقيقة عن بدايات العصر الإسلامي (٥٧٠ – ٦٣٢م)">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Aref+Ruqaa:wght@400;700&family=Reem+Kufi:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#020306;--gold:#d9b25f;--cream:#f4e9d2;--panel:rgba(8,10,16,.72)}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:var(--bg);overflow:hidden;color:var(--cream);font-family:'Reem Kufi',sans-serif}
+#stage{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:var(--bg)}
+#c{display:block;width:min(100vw,177.78vh);height:min(56.25vw,100vh);background:#000}
+#start{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:22px;background:radial-gradient(ellipse at center,rgba(20,28,48,.55),rgba(2,3,6,.92));cursor:pointer;z-index:5;transition:opacity .6s}
+#start.hide{opacity:0;pointer-events:none}
+#start .btn{width:96px;height:96px;border-radius:50%;border:2px solid var(--gold);display:flex;align-items:center;justify-content:center;box-shadow:0 0 40px rgba(217,178,95,.35)}
+#start .btn::after{content:"";border-style:solid;border-width:18px 0 18px 30px;border-color:transparent transparent transparent var(--gold);margin-left:8px}
+#start h1{font-family:'Aref Ruqaa',serif;color:var(--gold);font-size:clamp(34px,6vw,64px);margin:0}
+#start p{margin:0;opacity:.7;font-size:clamp(14px,2vw,18px)}
+#ui{position:fixed;left:0;right:0;bottom:0;padding:14px 16px 16px;display:flex;align-items:center;gap:12px;background:linear-gradient(transparent,rgba(0,0,0,.75));z-index:4;transition:opacity .4s;direction:ltr}
+#ui.idle{opacity:0}
+#ui button{background:none;border:1px solid rgba(217,178,95,.5);color:var(--gold);width:38px;height:38px;border-radius:50%;cursor:pointer;font-size:15px;flex:none}
+#bar{flex:1;height:6px;border-radius:3px;background:rgba(255,255,255,.15);position:relative;cursor:pointer}
+#fill{position:absolute;left:0;top:0;bottom:0;width:0;border-radius:3px;background:linear-gradient(90deg,#8a6424,#f0cf7a)}
+#time{font-variant-numeric:tabular-nums;font-size:14px;opacity:.8;min-width:84px;text-align:center}
+body.render #ui,body.render #start{display:none}
+</style>
+</head>
+<body>
+<div id="stage"><canvas id="c" width="1920" height="1080"></canvas></div>
+<div id="start"><div class="btn"></div><h1>فجر الإسلام</h1><p>موشن جرافيك · دقيقة واحدة · يُفضّل تشغيل الصوت</p></div>
+<div id="ui" class="idle">
+  <button id="pp" aria-label="تشغيل/إيقاف">❚❚</button>
+  <div id="bar"><div id="fill"></div></div>
+  <span id="time">0:00 / 1:00</span>
+  <button id="fs" aria-label="ملء الشاشة">⤢</button>
+</div>
+<audio id="snd" src="assets/islamic-dawn-soundtrack.m4a" preload="auto"></audio>
+<script>
+(() => {
+'use strict';
+const W = 1920, H = 1080, DUR = 60;
+const RENDER = /[?&]render\b/.test(location.search);
+if (RENDER) document.body.classList.add('render');
+
+const cv = document.getElementById('c');
+const main = cv.getContext('2d');
+const mk = (w, h) => { const c = document.createElement('canvas'); c.width = w; c.height = h; return c; };
+const LAYERS = [mk(W, H), mk(W, H)].map(c => ({ c, x: c.getContext('2d') }));
+let g = main;
+
+/* ---------- math ---------- */
+const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
+const seg = (t, a, b) => clamp((t - a) / (b - a));
+const lerp = (a, b, p) => a + (b - a) * p;
+const eio = p => p < .5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2;
+const eo = p => 1 - Math.pow(1 - p, 3);
+const eo5 = p => 1 - Math.pow(1 - p, 5);
+const back = p => { const c1 = 1.9, c3 = c1 + 1; return 1 + c3 * Math.pow(p - 1, 3) + c1 * Math.pow(p - 1, 2); };
+const ss = (a, b, x) => { const p = seg(x, a, b); return p * p * (3 - 2 * p); };
+const TAU = Math.PI * 2;
+function rng(seed) { return () => { seed |= 0; seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+const AR = '٠١٢٣٤٥٦٧٨٩';
+const ar = n => String(n).replace(/\d/g, d => AR[d]);
+const hex = h => [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16));
+const mix = (a, b, p) => { const A = hex(a), B = hex(b); return `rgb(${A.map((v, i) => Math.round(lerp(v, B[i], p))).join(',')})`; };
+
+/* ---------- text system (cached glyph layers + wipe/shine/blur) ---------- */
+const FONTS = { ruqaa: '"Aref Ruqaa","Amiri",serif', amiri: '"Amiri",serif', kufi: '"Reem Kufi",sans-serif' };
+const TC = new Map();
+const measurer = mk(8, 8).getContext('2d');
+function tex(str, fam, size, weight, fill, glow, gc) {
+  if (fam === 'kufi' && /[٠-٩]/.test(str)) { fam = 'amiri'; weight = 700; } // Kufi digits & final meem read poorly
+  const key = [str, fam, size, weight, fill, glow, gc].join('|');
+  let o = TC.get(key); if (o) return o;
+  const font = `${weight} ${size}px ${FONTS[fam]}`;
+  measurer.font = font;
+  const mw = measurer.measureText(str).width;
+  const pad = Math.ceil(size * .35 + glow * 1.6);
+  const w = Math.ceil(mw + pad * 2), h = Math.ceil(size * 1.9 + pad * 2);
+  const c = mk(w, h), x = c.getContext('2d');
+  x.font = font; x.direction = 'rtl'; x.textAlign = 'center'; x.textBaseline = 'middle';
+  let fs = fill;
+  if (fill === 'gold') {
+    fs = x.createLinearGradient(0, h / 2 - size * .55, 0, h / 2 + size * .55);
+    fs.addColorStop(0, '#fff6d6'); fs.addColorStop(.38, '#f0cf7a'); fs.addColorStop(.72, '#c9973c'); fs.addColorStop(1, '#8f6626');
+  } else if (fill === 'cream') fs = '#f4e9d2';
+  x.fillStyle = fs;
+  if (glow) {
+    x.shadowColor = gc || (fill === 'gold' ? 'rgba(240,185,85,.6)' : 'rgba(255,225,170,.35)');
+    x.shadowBlur = glow; x.fillText(str, w / 2, h / 2); x.shadowBlur = 0;
+  }
+  x.fillText(str, w / 2, h / 2);
+  o = { c, w, h }; TC.set(key, o); return o;
+}
+const SC = mk(2600, 900), sx = SC.getContext('2d');
+function drawTex(im, x, y, o) {
+  const a = o.alpha; if (a <= .003) return;
+  let src = im.c;
+  const rv = o.reveal ?? 1, sh = o.shine, doSh = sh != null && sh > 0 && sh < 1;
+  if (rv < .999 || doSh) {
+    if (SC.width < im.w || SC.height < im.h) { SC.width = Math.max(SC.width, im.w); SC.height = Math.max(SC.height, im.h); }
+    sx.globalCompositeOperation = 'source-over'; sx.clearRect(0, 0, im.w, im.h); sx.drawImage(im.c, 0, 0);
+    if (rv < .999) { // right-to-left feathered wipe
+      const f = im.w * .3, e = im.w - rv * (im.w + f);
+      const gr = sx.createLinearGradient(e, 0, e + f, 0); gr.addColorStop(0, 'rgba(0,0,0,0)'); gr.addColorStop(1, '#000');
+      sx.globalCompositeOperation = 'destination-in'; sx.fillStyle = gr; sx.fillRect(0, 0, im.w, im.h);
+    }
+    if (doSh) {
+      const c = im.w * (1.15 - 1.3 * sh), bw = Math.max(70, im.w * .12);
+      const gr = sx.createLinearGradient(c - bw, 0, c + bw, 0);
+      gr.addColorStop(0, 'rgba(255,250,235,0)'); gr.addColorStop(.5, 'rgba(255,250,235,.9)'); gr.addColorStop(1, 'rgba(255,250,235,0)');
+      sx.globalCompositeOperation = 'source-atop'; sx.fillStyle = gr; sx.fillRect(0, 0, im.w, im.h);
+    }
+    sx.globalCompositeOperation = 'source-over'; src = SC;
+  }
+  g.save(); g.globalAlpha = Math.min(1, a);
+  if (o.blur > .4) g.filter = `blur(${o.blur.toFixed(1)}px)`;
+  g.translate(x, y); const s = o.scale ?? 1; if (s !== 1) g.scale(s, s);
+  g.drawImage(src, 0, 0, im.w, im.h, -im.w / 2, -im.h / 2, im.w, im.h);
+  g.restore();
+}
+// animated text: appears at t0, leaves at t1 (or with its scene)
+function T(str, fam, size, x, y, t, t0, t1, o = {}) {
+  if (t < t0 - .01 || (t1 != null && t > t1 + .01)) return;
+  const im = tex(str, fam, size, o.w ?? 700, o.fill ?? 'cream', o.glow ?? 0, o.gc);
+  const din = o.din ?? 1;
+  const pin = eo(seg(t, t0, t0 + din));
+  const pout = t1 != null ? eio(seg(t, t1 - (o.dout ?? .6), t1)) : 0;
+  drawTex(im, x, y + (1 - pin) * (o.rise ?? 26) - pout * 14, {
+    alpha: pin * (1 - pout) * (o.a ?? 1),
+    reveal: o.wipe === false ? 1 : eo(seg(t, t0, t0 + din * 1.3)),
+    blur: (1 - pin) * (o.bl ?? 10) + pout * 8,
+    scale: (o.s ?? 1) * lerp(o.s0 ?? 1, 1, eo5(seg(t, t0, t0 + din * 1.8))) * (1 + Math.max(0, t - t0) * (o.drift ?? .004)),
+    shine: o.shine ? seg(t, t0 + .7, t0 + 2.1) : null,
+  });
+}
+
+/* ---------- painting helpers ---------- */
+function sky(stops) { const gr = g.createLinearGradient(0, 0, 0, H); stops.forEach(([p, c]) => gr.addColorStop(p, c)); g.fillStyle = gr; g.fillRect(0, 0, W, H); }
+function glow(x, y, r, col, a, mode = 'lighter') {
+  if (a <= .002 || r <= 1) return;
+  g.save(); g.globalCompositeOperation = mode; g.globalAlpha = Math.min(1, a);
+  const gr = g.createRadialGradient(x, y, 0, x, y, r); gr.addColorStop(0, col); gr.addColorStop(1, 'rgba(0,0,0,0)');
+  g.fillStyle = gr; g.fillRect(x - r, y - r, r * 2, r * 2); g.restore();
+}
+const STARS = (() => { const r = rng(7), a = []; for (let i = 0; i < 620; i++) a.push({ x: r() * W, y: r() * H * .8, s: r() * 1.7 + .35, p: r() * TAU, f: .6 + r() * 2.6, b: r() }); return a; })();
+function stars(t, alpha, dx = 0, maxY = H * .8) {
+  if (alpha <= 0) return;
+  g.save(); g.fillStyle = '#fff';
+  for (const s of STARS) {
+    if (s.y > maxY) continue;
+    const tw = .55 + .45 * Math.sin(t * s.f + s.p);
+    const x = ((s.x + dx) % W + W) % W;
+    g.globalAlpha = alpha * tw * (.3 + .7 * s.b) * (1 - s.y / maxY * .55);
+    g.fillRect(x, s.y, s.s, s.s);
+    if (s.b > .985) { g.globalAlpha *= .5; g.fillRect(x - 5, s.y + s.s / 2 - .4, 10 + s.s, .8); g.fillRect(x + s.s / 2 - .4, s.y - 5, .8, 10 + s.s); }
+  }
+  g.restore();
+}
+const DUST = (() => { const r = rng(11), a = []; for (let i = 0; i < 170; i++) a.push({ x: r() * W, y: r() * H, z: r(), p: r() * TAU, v: .3 + r() }); return a; })();
+function dust(t, alpha, col = '255,214,150', up = 12, sway = 30) {
+  if (alpha <= 0) return;
+  g.save(); g.globalCompositeOperation = 'lighter';
+  for (const d of DUST) {
+    const y = ((d.y - t * up * (.5 + d.z) * d.v) % H + H) % H;
+    const x = d.x + Math.sin(t * .4 * d.v + d.p) * sway * d.z;
+    const a = alpha * (.2 + .8 * d.z) * (.6 + .4 * Math.sin(t * 1.3 + d.p));
+    g.fillStyle = `rgba(${col},${a.toFixed(3)})`;
+    g.beginPath(); g.arc(x, y, .8 + d.z * 2.6, 0, TAU); g.fill();
+  }
+  g.restore();
+}
+function ridge(seed, n = 256, rough = .55) {
+  const r = rng(seed), a = new Float32Array(n + 1); a[0] = r(); a[n] = r();
+  let step = n, amp = 1;
+  while (step > 1) { const h = step / 2; for (let i = h; i < n; i += step) a[i] = (a[i - h] + a[i + h]) / 2 + (r() - .5) * amp; amp *= rough; step = h; }
+  let mn = Infinity, mx = -Infinity; for (const v of a) { mn = Math.min(mn, v); mx = Math.max(mx, v); }
+  for (let i = 0; i <= n; i++) a[i] = (a[i] - mn) / (mx - mn);
+  return a;
+}
+const R1 = ridge(3), R2 = ridge(19, 256, .5), R3 = ridge(41, 256, .6), R4 = ridge(77, 256, .45);
+function mountains(R, baseY, amp, fillTop, fillBot, dx = 0, rim = null, rimA = 0) {
+  const n = R.length - 1, span = W * 1.3, x0 = -W * .15 + dx;
+  g.beginPath(); g.moveTo(x0, H);
+  for (let i = 0; i <= n; i++) g.lineTo(x0 + i / n * span, baseY - R[i] * amp);
+  g.lineTo(x0 + span, H); g.closePath();
+  const gr = g.createLinearGradient(0, baseY - amp, 0, H); gr.addColorStop(0, fillTop); gr.addColorStop(1, fillBot);
+  g.fillStyle = gr; g.fill();
+  if (rim) {
+    g.save(); g.beginPath();
+    for (let i = 0; i <= n; i++) { const X = x0 + i / n * span, Y = baseY - R[i] * amp; i ? g.lineTo(X, Y) : g.moveTo(X, Y); }
+    g.strokeStyle = rim; g.globalAlpha = rimA; g.lineWidth = 2; g.stroke(); g.restore();
+  }
+}
+const duneFn = (baseY, amp, f, ph) => x => baseY + amp * Math.sin(x * f + ph) + amp * .45 * Math.sin(x * f * 2.3 + ph * 1.7 + 1.3) + amp * .18 * Math.sin(x * f * 5.1 + ph * .6);
+function dune(fn, top, bot, rim, rimA, yTop) {
+  const pts = []; for (let x = -10; x <= W + 10; x += 8) pts.push([x, fn(x)]);
+  g.beginPath(); g.moveTo(-10, H); pts.forEach(p => g.lineTo(p[0], p[1])); g.lineTo(W + 10, H); g.closePath();
+  const gr = g.createLinearGradient(0, yTop, 0, H); gr.addColorStop(0, top); gr.addColorStop(1, bot); g.fillStyle = gr; g.fill();
+  if (rim) { g.save(); g.beginPath(); pts.forEach((p, i) => i ? g.lineTo(p[0], p[1]) : g.moveTo(p[0], p[1])); g.strokeStyle = rim; g.globalAlpha = rimA; g.lineWidth = 2.2; g.stroke(); g.restore(); }
+}
+const MOON = (() => { const c = mk(220, 220), x = c.getContext('2d'); x.fillStyle = '#f7eed6'; x.shadowColor = 'rgba(255,240,200,.85)'; x.shadowBlur = 34; x.beginPath(); x.arc(110, 110, 46, 0, TAU); x.fill(); x.shadowBlur = 0; x.globalCompositeOperation = 'destination-out'; x.beginPath(); x.arc(131, 96, 44, 0, TAU); x.fill(); return c; })();
+function rays(x, y, n, len, a, t, spread = Math.PI, dir = -Math.PI / 2, col = '255,220,150') {
+  if (a <= .003) return;
+  g.save(); g.globalCompositeOperation = 'lighter'; g.translate(x, y);
+  for (let i = 0; i < n; i++) {
+    const r = rng(i * 31 + 5), ang = dir + (r() - .5) * spread + Math.sin(t * .3 + i) * .03;
+    const w = .012 + r() * .045, L = len * (.5 + r() * .6), aa = a * (.3 + .7 * r()) * (.65 + .35 * Math.sin(t * 1.1 + i * 1.7));
+    const gr = g.createRadialGradient(0, 0, 0, 0, 0, L); gr.addColorStop(0, `rgba(${col},${aa.toFixed(3)})`); gr.addColorStop(1, `rgba(${col},0)`);
+    g.fillStyle = gr; g.beginPath(); g.moveTo(0, 0); g.arc(0, 0, L, ang - w, ang + w); g.closePath(); g.fill();
+  }
+  g.restore();
+}
+function strokePartial(pts, p) {
+  if (p <= 0) return pts[0];
+  let L = 0; const c = [0];
+  for (let i = 1; i < pts.length; i++) { L += Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1]); c.push(L); }
+  const tgt = L * p; let head = pts[0];
+  g.beginPath(); g.moveTo(pts[0][0], pts[0][1]);
+  for (let i = 1; i < pts.length; i++) {
+    if (c[i] <= tgt) { g.lineTo(pts[i][0], pts[i][1]); head = pts[i]; }
+    else { const k = (tgt - c[i - 1]) / (c[i] - c[i - 1] || 1); head = [lerp(pts[i - 1][0], pts[i][0], k), lerp(pts[i - 1][1], pts[i][1], k)]; g.lineTo(head[0], head[1]); break; }
+  }
+  g.stroke(); return head;
+}
+function catmull(pts, closed, sg = 8) {
+  const out = [], n = pts.length, P = i => closed ? pts[(i + n) % n] : pts[clamp(i, 0, n - 1)], last = closed ? n : n - 1;
+  for (let i = 0; i < last; i++) {
+    const p0 = P(i - 1), p1 = P(i), p2 = P(i + 1), p3 = P(i + 2);
+    for (let s = 0; s < sg; s++) {
+      const t = s / sg, t2 = t * t, t3 = t2 * t;
+      out.push([0, 1].map(k => .5 * (2 * p1[k] + (-p0[k] + p2[k]) * t + (2 * p0[k] - 5 * p1[k] + 4 * p2[k] - p3[k]) * t2 + (-p0[k] + 3 * p1[k] - 3 * p2[k] + p3[k]) * t3)));
+    }
+  }
+  out.push(closed ? out[0] : pts[n - 1]); return out;
+}
+function starPoly(n, k, R, rot = 0) { const pts = []; for (let i = 0; i <= n; i++) { const a = -Math.PI / 2 + rot + i * k * TAU / n; pts.push([Math.cos(a) * R, Math.sin(a) * R]); } return pts; }
+function octagram(R) { const pts = []; for (let i = 0; i < 16; i++) { const a = -Math.PI / 2 + i * TAU / 16, r = i % 2 ? R * .76 : R; pts.push([Math.cos(a) * r, Math.sin(a) * r]); } return pts; }
+function poly(pts) { g.beginPath(); pts.forEach((p, i) => i ? g.lineTo(p[0], p[1]) : g.moveTo(p[0], p[1])); g.closePath(); }
+function rrect(x, y, w, h, r) { g.beginPath(); g.moveTo(x + r, y); g.arcTo(x + w, y, x + w, y + h, r); g.arcTo(x + w, y + h, x, y + h, r); g.arcTo(x, y + h, x, y, r); g.arcTo(x, y, x + w, y, r); g.closePath(); }
+
+function kaaba(x, y, s, light, t) {
+  const fw = s, fh = s * 1.02, sw = s * .46, sk = s * .13;
+  const L = x - fw * .62, R = L + fw;           // front face
+  g.save();
+  g.shadowColor = `rgba(255,190,110,${.55 * light})`; g.shadowBlur = 60 * light;
+  g.fillStyle = '#0a0a0c'; g.fillRect(L, y - fh, fw, fh); g.shadowBlur = 0;
+  g.beginPath(); g.moveTo(R, y); g.lineTo(R, y - fh); g.lineTo(R + sw, y - fh - sk); g.lineTo(R + sw, y - sk); g.closePath(); g.fillStyle = '#141418'; g.fill();
+  g.beginPath(); g.moveTo(L, y - fh); g.lineTo(R, y - fh); g.lineTo(R + sw, y - fh - sk); g.lineTo(L + sw, y - fh - sk); g.closePath(); g.fillStyle = '#1b1b20'; g.fill();
+  const by = y - fh * .76, bh = fh * .085; // embroidered band
+  const gr = g.createLinearGradient(0, by, 0, by + bh); gr.addColorStop(0, '#f3d27e'); gr.addColorStop(1, '#9a6c26');
+  g.fillStyle = gr; g.fillRect(L, by, fw, bh);
+  g.beginPath(); g.moveTo(R, by); g.lineTo(R + sw, by - sk); g.lineTo(R + sw, by - sk + bh); g.lineTo(R, by + bh); g.closePath(); g.fillStyle = '#86602a'; g.fill();
+  g.fillStyle = 'rgba(214,170,90,.85)'; g.fillRect(R - fw * .26, y - fh * .5, fw * .16, fh * .34); // door
+  g.strokeStyle = `rgba(255,210,140,${.5 * light})`; g.lineWidth = 2;
+  g.beginPath(); g.moveTo(L, y - fh); g.lineTo(L + sw, y - fh - sk); g.lineTo(R + sw, y - fh - sk); g.lineTo(R + sw, y - sk); g.stroke();
+  g.restore();
+}
+function palm(x, y, h, lean, col, t, ph = 0) {
+  g.save(); g.fillStyle = col; g.strokeStyle = col;
+  const tx = x + lean * h, ty = y - h;
+  g.lineCap = 'round';
+  for (let i = 0; i < 6; i++) { g.lineWidth = h * (.05 - i * .006); g.beginPath(); g.moveTo(x, y); g.quadraticCurveTo(x + lean * h * .2, y - h * .5, tx, ty); g.stroke(); }
+  const sway = Math.sin(t * .9 + ph) * .05;
+  for (let i = 0; i < 11; i++) {
+    const a = -Math.PI / 2 + (i - 5) * .33 + sway, len = h * (.42 + (i % 3) * .05);
+    const ex = tx + Math.cos(a) * len, ey = ty + Math.sin(a) * len * .55 + len * .32 * Math.abs(Math.cos(a));
+    const mx = tx + Math.cos(a) * len * .5, my = ty + Math.sin(a) * len * .5 - len * .14;
+    g.beginPath(); g.moveTo(tx, ty); g.quadraticCurveTo(mx, my - h * .03, ex, ey); g.quadraticCurveTo(mx, my + h * .03, tx, ty); g.fill();
+  }
+  g.restore();
+}
+
+/* ---------- geography (lon/lat) ---------- */
+const ARABIA = catmull([[34.9, 29.5], [35.2, 28.0], [35.8, 27.1], [36.6, 25.9], [37.4, 24.9], [38.1, 24.0], [38.9, 22.8], [39.15, 21.5], [40.0, 20.2], [41.2, 18.5], [42.5, 16.6], [42.8, 15.0], [43.2, 13.6], [43.5, 12.7], [45.0, 12.8], [46.8, 13.4], [48.7, 14.0], [50.2, 15.0], [52.2, 15.6], [53.6, 16.6], [55.3, 17.4], [56.6, 18.3], [57.8, 19.0], [58.8, 20.5], [59.8, 22.4], [58.8, 23.5], [57.4, 23.9], [56.4, 24.9], [56.3, 26.2], [55.6, 25.6], [54.6, 24.7], [53.5, 24.2], [52.2, 24.0], [51.6, 24.3], [51.6, 25.4], [51.4, 26.1], [51.0, 25.9], [50.8, 25.2], [50.8, 24.8], [50.2, 25.5], [50.1, 26.4], [49.6, 27.1], [48.8, 27.7], [48.4, 28.5], [48.0, 29.2], [47.9, 29.9], [48.5, 30.0], [47.0, 31.2], [44.5, 32.0], [41.0, 32.3], [38.5, 32.0], [36.8, 31.3], [35.5, 30.4]], true, 6);
+const HIJRA = catmull([[39.83, 21.42], [39.86, 21.36], [39.55, 21.75], [39.25, 22.4], [39.05, 23.0], [39.0, 23.6], [39.25, 24.1], [39.62, 24.42], [39.61, 24.47]], false, 10);
+const MECCA = [39.83, 21.42], MEDINA = [39.61, 24.47];
+const proj = (cam, p) => [cam.ax + (p[0] - cam.lon) * cam.k * .92, cam.ay - (p[1] - cam.lat) * cam.k];
+const camMix = (a, b, p) => ({ lon: lerp(a.lon, b.lon, p), lat: lerp(a.lat, b.lat, p), k: Math.exp(lerp(Math.log(a.k), Math.log(b.k), p)), ax: lerp(a.ax, b.ax, p), ay: lerp(a.ay, b.ay, p) });
+function graticule(cam, a) {
+  g.save(); g.strokeStyle = `rgba(217,178,95,${.08 * a})`; g.lineWidth = 1;
+  for (let lon = 20; lon <= 70; lon += 2) { const p0 = proj(cam, [lon, 0]), p1 = proj(cam, [lon, 45]); g.beginPath(); g.moveTo(p0[0], p0[1]); g.lineTo(p1[0], p1[1]); g.stroke(); }
+  for (let lat = 0; lat <= 45; lat += 2) { const p0 = proj(cam, [20, lat]), p1 = proj(cam, [70, lat]); g.beginPath(); g.moveTo(p0[0], p0[1]); g.lineTo(p1[0], p1[1]); g.stroke(); }
+  g.restore();
+}
+function land(cam, drawP, fillA, t) {
+  const pts = ARABIA.map(p => proj(cam, p));
+  if (fillA > 0) {
+    poly(pts); g.save(); g.globalAlpha = fillA;
+    const b = proj(cam, [47, 31]), e = proj(cam, [47, 13]);
+    const gr = g.createLinearGradient(0, b[1], 0, e[1]); gr.addColorStop(0, '#3e2f1c'); gr.addColorStop(1, '#22180d');
+    g.fillStyle = gr; g.fill(); g.restore();
+  }
+  g.save(); g.lineJoin = 'round'; g.strokeStyle = '#e2bd6a'; g.lineWidth = 2.4; g.shadowColor = 'rgba(240,190,90,.9)'; g.shadowBlur = 14;
+  const head = strokePartial(pts, drawP); g.restore();
+  if (drawP > 0 && drawP < 1) glow(head[0], head[1], 40, 'rgba(255,220,150,.9)', 1);
+}
+function cityMark(cam, p, t, a, label, side = 1) {
+  if (a <= 0) return;
+  const [x, y] = proj(cam, p);
+  g.save(); g.globalAlpha = a;
+  for (let i = 0; i < 2; i++) { const k = ((t * .7 + i * .5) % 1); g.strokeStyle = `rgba(255,215,140,${(1 - k) * .8})`; g.lineWidth = 2; g.beginPath(); g.arc(x, y, 8 + k * 38, 0, TAU); g.stroke(); }
+  g.fillStyle = '#fff3d0'; g.shadowColor = '#ffcf7a'; g.shadowBlur = 18; g.beginPath(); g.arc(x, y, 7, 0, TAU); g.fill();
+  g.restore();
+  if (label) { const im = tex(label, 'kufi', 38, 600, 'cream', 10, 'rgba(0,0,0,.9)'); drawTex(im, x - side * (im.w / 2 + 10), y, { alpha: a }); }
+}
+
+/* ---------- reusable ornaments ---------- */
+const PATTERN = (() => {
+  const c = mk(160, 160), x = c.getContext('2d'); x.strokeStyle = 'rgba(217,178,95,1)'; x.lineWidth = 1.4;
+  const st = (cx, cy, R) => { x.beginPath(); for (let i = 0; i <= 16; i++) { const a = -Math.PI / 2 + i * 3 * TAU / 8, px = cx + Math.cos(a) * R, py = cy + Math.sin(a) * R; i ? x.lineTo(px, py) : x.moveTo(px, py); } x.stroke(); };
+  [[80, 80], [0, 0], [160, 0], [0, 160], [160, 160]].forEach(([a, b]) => st(a, b, 52));
+  x.beginPath(); x.arc(80, 80, 22, 0, TAU); x.stroke();
+  return c;
+})();
+function patternBg(t, a) {
+  if (a <= 0) return;
+  g.save(); g.globalAlpha = a; g.translate(-((t * 8) % 160), -((t * 4) % 160));
+  g.fillStyle = g.createPattern(PATTERN, 'repeat'); g.fillRect(0, 0, W + 320, H + 320); g.restore();
+}
+function divider(x, y, w, p, a = 1) {
+  if (p <= 0) return;
+  g.save(); g.globalAlpha = a;
+  const hw = w / 2 * eio(p), gr = g.createLinearGradient(x - hw, 0, x + hw, 0);
+  gr.addColorStop(0, 'rgba(217,178,95,0)'); gr.addColorStop(.5, 'rgba(240,207,122,1)'); gr.addColorStop(1, 'rgba(217,178,95,0)');
+  g.fillStyle = gr; g.fillRect(x - hw, y - 1, hw * 2, 2);
+  g.translate(x, y); g.rotate(Math.PI / 4); g.fillStyle = '#f0cf7a'; const d = 7 * eo(seg(p, .3, 1)); g.fillRect(-d, -d, d * 2, d * 2);
+  g.restore();
+}
+function withCam(s, cx, cy, fn) { g.save(); g.translate(cx, cy); g.scale(s, s); g.translate(-cx, -cy); fn(); g.restore(); }
+
+/* ================= SCENES ================= */
+// 1 — Title
+function sIntro(t) {
+  sky([[0, '#04060c'], [1, '#080b14']]);
+  glow(960, 520, 820, 'rgba(38,58,108,.75)', 1);
+  glow(960, 500, 650, 'rgba(255,196,110,.42)', ss(1.3, 2.6, t) * (1 - .3 * ss(3.5, 5, t)));
+  const fo = (1 - .55 * ss(1.4, 2.6, t));
+  g.save(); g.translate(960, 520); g.rotate(t * .045);
+  const s = 1 + t * .02; g.scale(s, s);
+  g.strokeStyle = '#d9b25f'; g.shadowColor = 'rgba(240,190,90,.9)'; g.shadowBlur = 16; g.lineJoin = 'round';
+  const L = (pts, a, b, lw, al) => { g.lineWidth = lw; g.globalAlpha = al * fo; strokePartial(pts, eio(seg(t, a, b))); };
+  L(starPoly(8, 3, 400), .1, 2.1, 2.6, .95);
+  L(starPoly(16, 5, 318, Math.PI / 16), .4, 2.5, 1.5, .55);
+  L(starPoly(8, 3, 200, Math.PI / 8), .7, 2.3, 2, .8);
+  L(starPoly(12, 5, 520, 0), .2, 2.6, 1, .3);
+  g.globalAlpha = .6 * fo; g.lineWidth = 1.5;
+  g.beginPath(); g.arc(0, 0, 440, -Math.PI / 2, -Math.PI / 2 + TAU * eio(seg(t, 0, 1.9))); g.stroke();
+  g.beginPath(); g.arc(0, 0, 452, Math.PI / 2, Math.PI / 2 + TAU * eio(seg(t, .2, 2.1))); g.stroke();
+  g.restore();
+  dust(t, .6);
+  T('فجر الإسلام', 'ruqaa', 200, 960, 480, t, 1.5, null, { fill: 'gold', glow: 40, shine: true, s0: 1.12, din: 1.2, bl: 18 });
+  divider(960, 618, 560, seg(t, 2.3, 3.3));
+  T('بدايات العصر الإسلامي  ·  ٥٧٠ – ٦٣٢م', 'kufi', 44, 960, 690, t, 2.6, null, { w: 600 });
+}
+// 2 — Arabia before Islam
+function sJahiliyya(t) {
+  const lt = t - 5;
+  sky([[0, '#040714'], [.5, '#10142e'], [.78, '#2a2138'], [1, '#43302c']]);
+  stars(t, .95, -lt * 5, 760);
+  g.drawImage(MOON, 1450 - lt * 5 - 110, 210 - 110);
+  glow(960, 880, 1000, 'rgba(190,120,80,.2)', 1);
+  const d1 = duneFn(735, 24, .0021, lt * .05 + .5), d2 = duneFn(808, 32, .0018, lt * .1 + 2), d3 = duneFn(900, 40, .0015, lt * .18 + 4), d4 = duneFn(1010, 44, .0012, lt * .3 + 1);
+  withCam(1 + lt * .006, 960, 700, () => {
+    dune(d1, '#2b2130', '#120d16', 'rgba(255,225,190,.5)', .35, 700);
+    dune(d2, '#3a2721', '#170f0c', 'rgba(255,215,170,.55)', .4, 770);
+    for (let i = 0; i < 9; i++) { // caravan lanterns on the crest
+      const x = 1560 - lt * 62 - i * 40, y = d2(x) - 13 - Math.abs(Math.sin(lt * 3 + i * .8)) * 3;
+      glow(x, y, 26, 'rgba(255,170,80,.9)', .8);
+      g.fillStyle = '#ffe2a8'; g.beginPath(); g.arc(x, y, 2.2, 0, TAU); g.fill();
+    }
+    dune(d3, '#2a1a12', '#0b0705', 'rgba(255,210,160,.4)', .3, 860);
+    dune(d4, '#120b07', '#040302', null, 0, 960);
+  });
+  dust(t, .35, '255,220,180', 3, 60);
+  T('شبه الجزيرة العربية  ·  القرن السادس الميلادي', 'kufi', 36, 960, 250, t, 5.5, 10.9, { fill: 'gold', w: 600 });
+  T('قبائلُ متناحرة… وأصنامٌ حول الكعبة', 'amiri', 84, 960, 360, t, 6.3, 10.9, { glow: 16 });
+  T('زمنٌ عُرف بالجاهلية… ينتظر فجرًا جديدًا', 'amiri', 50, 960, 470, t, 7.9, 10.9, { fill: 'rgba(244,233,210,.82)', w: 400 });
+}
+// 3 — 570: birth of the Prophet ﷺ
+function s570(t) {
+  const lt = t - 11, dawn = eio(seg(t, 11.3, 16.8));
+  sky([[0, mix('#060a1c', '#16224a', dawn)], [.5, mix('#1c1a3c', '#6a4a62', dawn)], [.8, mix('#3a2836', '#d78a5a', dawn)], [1, mix('#4a2f2a', '#f6b870', dawn)]]);
+  stars(t, .8 * (1 - dawn), 0, 600);
+  glow(980, 860, lerp(350, 1000, dawn), 'rgba(255,170,90,.7)', .3 + .7 * dawn);
+  withCam(1 + lt * .008, 960, 820, () => {
+    mountains(R1, 820, 210, mix('#231a2a', '#6a4048', dawn), mix('#140e16', '#2a1820', dawn), -lt * 3, 'rgba(255,200,140,1)', .3 * dawn);
+    mountains(R2, 905, 150, mix('#120c12', '#2a1618', dawn), '#070406', -lt * 7);
+    g.fillStyle = '#060405'; g.fillRect(-100, 905, W + 200, 300);
+    kaaba(980, 910, 190, dawn, t);
+  });
+  dust(t, .45 * dawn);
+  const n = Math.round(lerp(500, 570, eo5(seg(t, 11.3, 13))));
+  T(ar(n) + 'م', 'kufi', 150, 960, 170, t, 11.3, 16.9, { fill: 'gold', glow: 30, wipe: false, din: .6, drift: 0 });
+  T('عام الفيل', 'ruqaa', 78, 960, 305, t, 12.6, 16.9, { fill: 'gold', glow: 16, shine: true });
+  T('وُلد النبي محمد ﷺ في مكة المكرمة', 'amiri', 74, 960, 425, t, 13.3, 16.9, { glow: 14 });
+  T('نشأ يتيمًا… وعُرف بين قومه بـ«الصادق الأمين»', 'amiri', 46, 960, 525, t, 14.7, 16.9, { fill: 'rgba(244,233,210,.85)', w: 400 });
+}
+// 4 — 610: Revelation at Hira
+const NOUR = catmull([[-60, 1100], [-60, 920], [220, 880], [430, 820], [610, 735], [770, 650], [880, 592], [955, 556], [1000, 548], [1040, 566], [1110, 610], [1230, 668], [1400, 745], [1610, 805], [1800, 850], [1990, 885], [1990, 1100]], false, 6)
+  .map((p, i, a) => [p[0], p[1] + (i > 2 && i < a.length - 3 ? (R3[i % 256] - .5) * 16 : 0)]);
+function s610(t) {
+  const lt = t - 17, light = ss(17.6, 19.2, t);
+  sky([[0, '#05030f'], [.45, '#140c2a'], [.75, '#2a1838'], [1, '#3a2030']]);
+  stars(t, .9, lt * 3, 700);
+  const cx = 1032, cy = 614;
+  withCam(1 + lt * .01, cx, cy, () => {
+    rays(cx, cy, 46, 1250, .5 * light, t, 2.5);
+    glow(cx, cy, 800, 'rgba(255,200,120,.55)', light);
+    mountains(R4, 800, 120, '#140d1e', '#09060f', lt * 2);
+    poly(NOUR); const gr = g.createLinearGradient(0, 540, 0, H); gr.addColorStop(0, '#1c1428'); gr.addColorStop(1, '#06040a'); g.fillStyle = gr; g.fill();
+    g.save(); g.beginPath(); NOUR.forEach((p, i) => i ? g.lineTo(p[0], p[1]) : g.moveTo(p[0], p[1]));
+    g.strokeStyle = `rgba(255,205,140,${.15 + .5 * light})`; g.lineWidth = 2; g.shadowColor = 'rgba(255,190,110,.9)'; g.shadowBlur = 12; g.stroke(); g.restore();
+    g.fillStyle = '#020104'; g.beginPath(); g.ellipse(cx, cy + 6, 16, 12, 0, Math.PI, 0); g.lineTo(cx + 16, cy + 10); g.lineTo(cx - 16, cy + 10); g.fill();
+    glow(cx, cy + 2, 70, 'rgba(255,235,190,1)', light);
+  });
+  glow(960, 540, 1400, 'rgba(255,240,210,.5)', Math.exp(-Math.pow((t - 18.5) / .35, 2)) * .9);
+  dust(t, .7 * light, '255,225,170', 38, 20);
+  T('٦١٠م  ·  غار حراء', 'kufi', 46, 960, 835, t, 17.4, 23.9, { fill: 'gold', glow: 10 });
+  T('اقْرَأْ', 'ruqaa', 240, 960, 255, t, 18.4, 23.9, { fill: 'gold', glow: 50, shine: true, s0: 1.18, din: 1.1, bl: 22, wipe: false });
+  T('﴿ اقْرَأْ بِاسْمِ رَبِّكَ الَّذِي خَلَقَ ﴾', 'amiri', 64, 960, 440, t, 20, 23.9, { glow: 14 });
+  T('نزول الوحي… وبداية الرسالة', 'kufi', 40, 960, 905, t, 21.6, 23.9, { fill: 'rgba(244,233,210,.85)', w: 400 });
+}
+// 5 — Years of patience in Mecca
+const MECCA_EV = [
+  ['٦١٣م', 'الجهر بالدعوة', 'من على جبل الصفا', 24.9],
+  ['٦١٥م', 'الهجرة إلى الحبشة', 'فرارًا بالدين من الأذى', 26.3],
+  ['٦١٦ – ٦١٩م', 'حصار الشِّعب', 'ثلاث سنوات من المقاطعة', 27.7],
+  ['٦١٩م', 'عام الحزن', 'وفاة خديجة وأبي طالب', 29.1],
+];
+function sMecca(t) {
+  sky([[0, '#0b0504'], [.6, '#1d0d09'], [1, '#2e140d']]);
+  glow(960, 1100, 1000, 'rgba(200,80,40,.35)', 1);
+  patternBg(t, .035);
+  dust(t, .7, '255,140,70', 55, 40);
+  const shift = 620 * eio(seg(t, 26.1, 30.2)), y = 560;
+  const lineEnd = 1500 - 500 * clamp((t - 24.7) / 1.4, 0, 3.4) + shift - 120;
+  g.save(); g.strokeStyle = '#d9b25f'; g.lineWidth = 2.5; g.shadowColor = 'rgba(240,190,90,.9)'; g.shadowBlur = 12;
+  g.beginPath(); g.moveTo(W + 20, y); g.lineTo(Math.max(lineEnd, 150), y); g.stroke(); g.restore();
+  glow(Math.max(lineEnd, 150), y, 50, 'rgba(255,215,140,.9)', t < 29.5 ? 1 : 1 - seg(t, 29.5, 30));
+  MECCA_EV.forEach(([yr, ti, sub, ta], i) => {
+    const x = 1500 - i * 500 + shift;
+    if (t < ta || x < -300 || x > W + 300) return;
+    const p = back(seg(t, ta, ta + .55));
+    g.save(); g.translate(x, y); g.scale(p, p);
+    g.fillStyle = '#1a0d08'; g.strokeStyle = '#f0cf7a'; g.lineWidth = 3; g.shadowColor = 'rgba(240,190,90,.9)'; g.shadowBlur = 18;
+    g.rotate(Math.PI / 4 + t * .3); g.fillRect(-16, -16, 32, 32); g.strokeRect(-16, -16, 32, 32);
+    g.restore();
+    g.save(); g.globalAlpha = eo(seg(t, ta, ta + .5)); g.strokeStyle = 'rgba(240,207,122,.6)'; g.lineWidth = 1.5;
+    g.beginPath(); g.moveTo(x, y - 30); g.lineTo(x, y - 30 - 50 * eo(seg(t, ta, ta + .6))); g.stroke(); g.restore();
+    T(yr, 'kufi', 54, x, 445, t, ta + .1, 30.9, { fill: 'gold', glow: 12 });
+    T(ti, 'amiri', 54, x, 650, t, ta + .25, 30.9, { glow: 10 });
+    T(sub, 'amiri', 34, x, 718, t, ta + .45, 30.9, { fill: 'rgba(244,233,210,.7)', w: 400 });
+  });
+  T('سنواتُ الصبر في مكة', 'amiri', 78, 960, 205, t, 24.3, 30.9, { fill: 'gold', glow: 16, shine: true });
+}
+// 6 — 622: the Hijra
+const CAM_WIDE = { lon: 47.2, lat: 22.4, k: 40, ax: 960, ay: 585 };
+const CAM_HEJAZ = { lon: 39.7, lat: 22.95, k: 168, ax: 700, ay: 585 };
+function sHijra(t) {
+  sky([[0, '#050b16'], [1, '#0a1422']]);
+  glow(760, 560, 900, 'rgba(40,80,120,.35)', 1);
+  const cam = camMix(CAM_WIDE, CAM_HEJAZ, eio(seg(t, 33, 35)));
+  graticule(cam, 1);
+  land(cam, eio(seg(t, 31.2, 33.2)), .9 * ss(32.4, 33.6, t), t);
+  const seaA = ss(32.4, 33, t) * (1 - ss(33, 33.6, t));
+  if (seaA > 0) {
+    drawTex(tex('البحر الأحمر', 'amiri', 30, 400, 'rgba(160,190,220,.8)', 0), ...proj(cam, [37.2, 19.6]), { alpha: seaA });
+    drawTex(tex('الخليج العربي', 'amiri', 30, 400, 'rgba(160,190,220,.8)', 0), ...proj(cam, [52.6, 27.6]), { alpha: seaA });
+  }
+  const ca = ss(33.6, 34.3, t);
+  cityMark(cam, MECCA, t, ca, 'مكة', -1);
+  cityMark(cam, MEDINA, t, ss(36.6, 37.1, t) + ca * .6 * (1 - ss(36.6, 37.1, t)), 'يثرب ← المدينة', -1);
+  const rp = eio(seg(t, 34.5, 37));
+  if (rp > 0) {
+    const pts = HIJRA.map(p => proj(cam, p));
+    g.save(); g.setLineDash([2, 12]); g.lineCap = 'round'; g.strokeStyle = 'rgba(255,230,180,.35)'; g.lineWidth = 3; strokePartial(pts, 1); g.restore();
+    g.save(); g.lineCap = 'round'; g.strokeStyle = '#ffd98a'; g.lineWidth = 4; g.shadowColor = '#ffbf5a'; g.shadowBlur = 20;
+    const h = strokePartial(pts, rp); g.restore();
+    if (rp < 1) { glow(h[0], h[1], 60, 'rgba(255,230,170,1)', 1); g.fillStyle = '#fff'; g.beginPath(); g.arc(h[0], h[1], 5, 0, TAU); g.fill(); }
+  }
+  const tx = 1440;
+  T('٦٢٢م', 'kufi', 120, tx, 250, t, 31.4, 37.9, { fill: 'gold', glow: 26 });
+  T('الهجرة النبوية', 'ruqaa', 92, tx, 385, t, 31.9, 37.9, { fill: 'gold', glow: 18, shine: true });
+  divider(tx, 470, 420, seg(t, 33, 34), 1 - ss(37.3, 37.9, t));
+  T('من مكة إلى يثرب… نحو ٤٠٠ كم', 'amiri', 48, tx, 545, t, 35.3, 37.9);
+  T('بداية التقويم الهجري — ١هـ', 'kufi', 44, tx, 640, t, 36.4, 37.9, { fill: 'gold', glow: 10, w: 600, shine: true });
+}
+// 7 — Medina: building the state
+const CARDS = [['بناء المسجد النبوي', 'مركز العبادة والحكم'], ['المؤاخاة', 'بين المهاجرين والأنصار'], ['وثيقة المدينة', 'تنظيم العلاقة بين سكانها']];
+function sMedina(t) {
+  const lt = t - 38;
+  sky([[0, '#06121a'], [.45, '#123036'], [.72, '#5a5a44'], [.86, '#c98a4c'], [1, '#e9b874']]);
+  glow(1320, 900, 650, 'rgba(255,190,110,.6)', 1);
+  withCam(1 + lt * .01, 960, 900, () => {
+    mountains(R3, 860, 70, '#2c3a34', '#1a2420', -lt * 4);
+    g.fillStyle = '#0b100e'; g.fillRect(-100, 900, W + 200, 300);
+    for (let i = 0; i < 7; i++) palm(560 + i * 130 + (i % 2) * 30, 905, 150 + (i * 37 % 60), (i % 3 - 1) * .08, '#0e1412', t, i);
+    g.fillStyle = '#0a0e0c'; g.fillRect(660, 840, 600, 70);           // mud-brick enclosure
+    g.fillStyle = '#121a16'; g.fillRect(660, 834, 600, 8);
+    for (let i = 0; i < 9; i++) { g.fillStyle = '#070a09'; g.fillRect(680 + i * 70, 846, 10, 64); } // palm-trunk columns
+    g.strokeStyle = 'rgba(255,200,130,.45)'; g.lineWidth = 2; g.beginPath(); g.moveTo(660, 834); g.lineTo(1260, 834); g.stroke();
+    palm(150, 1090, 520, .12, '#050806', t, 2); palm(1790, 1090, 560, -.1, '#050806', t, 5); palm(1640, 1100, 380, -.05, '#070a08', t, 1);
+  });
+  dust(t, .4);
+  T('المدينة المنوّرة  ·  تأسيس الدولة', 'amiri', 76, 960, 140, t, 38.3, 42.9, { fill: 'gold', glow: 16, shine: true });
+  CARDS.forEach(([a, b], i) => {
+    const ta = 39.2 + i * .55, x = 1440 - i * 480, y = 420;
+    const p = eo(seg(t, ta, ta + .8)), out = 1 - eio(seg(t, 42.4, 42.95));
+    if (p <= 0 || out <= 0) return;
+    g.save(); g.globalAlpha = p * out; g.translate(0, (1 - p) * 40);
+    rrect(x - 210, y - 95, 420, 190, 22); g.fillStyle = 'rgba(6,14,16,.62)'; g.fill();
+    g.strokeStyle = 'rgba(240,207,122,.75)'; g.lineWidth = 1.6; g.stroke();
+    g.translate(x, y - 95); g.rotate(Math.PI / 4); g.fillStyle = '#f0cf7a'; g.fillRect(-8, -8, 16, 16);
+    g.restore();
+    T(a, 'amiri', 46, x, y - 18 + (1 - p) * 40, t, ta + .15, 42.95, { glow: 8, rise: 0 });
+    T(b, 'kufi', 30, x, y + 44 + (1 - p) * 40, t, ta + .3, 42.95, { fill: 'rgba(240,207,122,.9)', w: 400, rise: 0 });
+  });
+}
+// 8 — Years of consolidation
+const BATTLES = [['بدر', '٢هـ · ٦٢٤م', 'أول نصرٍ حاسم'], ['أُحد', '٣هـ · ٦٢٥م', 'درسٌ في الثبات'], ['الخندق', '٥هـ · ٦٢٧م', 'صدُّ الأحزاب'], ['الحديبية', '٦هـ · ٦٢٨م', 'صلحٌ… وفتحٌ مبين']];
+function sBattles(t) {
+  sky([[0, '#04070e'], [1, '#0c1526']]);
+  glow(960, 560, 900, 'rgba(50,80,140,.35)', 1);
+  patternBg(t, .05);
+  const y = 520, lp = eio(seg(t, 43.6, 45.9));
+  g.save(); g.strokeStyle = 'rgba(240,207,122,.55)'; g.lineWidth = 2; g.beginPath(); g.moveTo(1560, y); g.lineTo(lerp(1560, 360, lp), y); g.stroke(); g.restore();
+  BATTLES.forEach(([n, d, s], i) => {
+    const ta = 43.6 + i * .6, x = 1500 - i * 360;
+    if (t < ta) return;
+    const p = back(seg(t, ta, ta + .6));
+    g.save(); g.translate(x, y); g.scale(p, p); g.rotate(t * .12 * (i % 2 ? -1 : 1));
+    poly(octagram(118)); const gr = g.createRadialGradient(0, 0, 10, 0, 0, 118); gr.addColorStop(0, '#16233c'); gr.addColorStop(1, '#090f1c');
+    g.fillStyle = gr; g.fill(); g.strokeStyle = '#e2bd6a'; g.lineWidth = 2.5; g.shadowColor = 'rgba(240,190,90,.8)'; g.shadowBlur = 16; g.stroke();
+    g.shadowBlur = 0; g.lineWidth = 1; g.strokeStyle = 'rgba(226,189,106,.5)'; g.beginPath(); g.arc(0, 0, 84, 0, TAU); g.stroke();
+    g.restore();
+    T(n, 'amiri', 62, x, y - 4, t, ta + .2, 47.95, { fill: 'gold', glow: 12, wipe: false, rise: 0, s0: .6 });
+    T(d, 'kufi', 34, x, y + 175, t, ta + .35, 47.95, { fill: 'gold', w: 600 });
+    T(s, 'amiri', 36, x, y + 232, t, ta + .5, 47.95, { fill: 'rgba(244,233,210,.8)', w: 400 });
+  });
+  T('سنواتُ التمكين', 'amiri', 80, 960, 175, t, 43.2, 47.95, { fill: 'gold', glow: 16, shine: true });
+}
+// 9 — 630: Conquest of Mecca
+function sFath(t) {
+  const lt = t - 48, b = ss(48, 50.5, t);
+  sky([[0, '#0d0e26'], [.42, '#3a2446'], [.72, mix('#7a4038', '#c36a3a', b)], [1, mix('#c08048', '#f6c070', b)]]);
+  rays(1000, 880, 50, 1300, .35 * b, t, 2.8);
+  glow(1000, 860, lerp(500, 1100, b), 'rgba(255,190,100,.75)', .5 + .5 * b);
+  for (let i = 0; i < 3; i++) { const k = ((lt * .45 + i / 3) % 1); g.save(); g.globalCompositeOperation = 'lighter'; g.strokeStyle = `rgba(255,220,150,${(1 - k) * .35 * b})`; g.lineWidth = 3; g.beginPath(); g.ellipse(1000, 880, 120 + k * 1100, (120 + k * 1100) * .32, 0, 0, TAU); g.stroke(); g.restore(); }
+  withCam(1.04 - lt * .008, 960, 900, () => {
+    mountains(R2, 860, 190, '#4a2a2c', '#1e1012', lt * 3, 'rgba(255,210,150,1)', .4);
+    mountains(R1, 935, 120, '#1c0f10', '#0a0506', -lt * 6);
+    g.fillStyle = '#080405'; g.fillRect(-100, 935, W + 200, 300);
+    kaaba(1000, 940, 230, 1, t);
+  });
+  dust(t, .7, '255,225,170', 18);
+  T('٨هـ  ·  ٦٣٠م', 'kufi', 44, 960, 95, t, 48.2, 51.95, { fill: 'gold', w: 600 });
+  T('فتح مكة', 'ruqaa', 170, 960, 300, t, 48.6, 51.95, { fill: 'gold', glow: 36, shine: true, s0: 1.12, bl: 16 });
+  T('﴿ إِذَا جَاءَ نَصْرُ اللَّهِ وَالْفَتْحُ ﴾', 'amiri', 60, 960, 455, t, 49.6, 51.95, { glow: 14, gc: 'rgba(0,0,0,.8)' });
+  T('عفوٌ عام… وتطهيرُ الكعبة من الأصنام', 'amiri', 44, 960, 545, t, 50.5, 51.95, { glow: 12, gc: 'rgba(0,0,0,.9)' });
+}
+// 10 — 632: Farewell pilgrimage
+const CROWD = (() => { const r = rng(5), a = []; for (let i = 0; i < 3600; i++) { const v = Math.pow(r(), 1.6); a.push({ u: r(), v, p: r() * TAU, w: .7 + r() * .3 }); } return a; })();
+function sWada(t) {
+  const lt = t - 52, sun = seg(t, 52, 56.5);
+  sky([[0, '#140c26'], [.35, '#4a2444'], [.58, '#c0603e'], [.68, '#f2a95e'], [.72, '#f8cf8a'], [1, '#2a1610']]);
+  glow(1320, 735 + sun * 20, 620, 'rgba(255,200,120,.85)', 1);
+  g.save(); g.fillStyle = '#fff1cc'; g.shadowColor = '#ffd27a'; g.shadowBlur = 60; g.beginPath(); g.arc(1320, 742 + sun * 22, 52, 0, TAU); g.fill(); g.restore();
+  withCam(1 + lt * .01, 960, 780, () => {
+    mountains(R4, 778, 50, '#5a3040', '#2a1620', -lt * 3);
+    g.fillStyle = '#2a1712'; g.beginPath(); g.moveTo(780, 780); g.bezierCurveTo(860, 700, 1060, 700, 1140, 780); g.closePath(); g.fill(); // Jabal al-Rahmah
+    const gr = g.createLinearGradient(0, 778, 0, H); gr.addColorStop(0, '#4a2a1e'); gr.addColorStop(1, '#120a07'); g.fillStyle = gr; g.fillRect(-100, 778, W + 200, 400);
+    g.save(); g.fillStyle = '#fff6ea';
+    for (const c of CROWD) {
+      const y = 784 + c.v * 300, spread = .55 + c.v * 1.6, x = 960 + (c.u - .5) * W * spread;
+      if (x < -20 || x > W + 20) continue;
+      g.globalAlpha = (.45 + .55 * c.v) * c.w * (.8 + .2 * Math.sin(t * 2 + c.p)) * ss(52, 53.2, t) * ss(781, 796, y);
+      const s = 1.4 + c.v * 4.2; g.fillRect(x, y - s * 1.5, s, s * 1.5);
+    }
+    g.restore();
+  });
+  dust(t, .5, '255,230,190', 10);
+  T('١٠هـ  ·  حجة الوداع', 'kufi', 44, 960, 120, t, 52.3, 56.45, { fill: 'gold', w: 600 });
+  T('﴿ الْيَوْمَ أَكْمَلْتُ لَكُمْ دِينَكُمْ ﴾', 'amiri', 76, 960, 270, t, 52.8, 56.45, { glow: 22, shine: true });
+  T('١١هـ / ٦٣٢م — انتقل النبي ﷺ إلى الرفيق الأعلى', 'amiri', 46, 960, 395, t, 54.4, 56.45, { glow: 12, gc: 'rgba(0,0,0,.6)', w: 400 });
+}
+// 11 — Outro: the Rightly-Guided Caliphs & the light that spread
+const DEST = [[[36.3, 33.5], 'الشام', 1], [[44.3, 32.6], 'العراق', -1], [[31.2, 30.0], 'مصر', 1]];
+function sOutro(t) {
+  const lt = t - 56.5;
+  sky([[0, '#03060d'], [1, '#08111d']]);
+  const cam = { lon: 41 + lt * .2, lat: 24.6, k: 30 - lt * .8, ax: 960, ay: 560 };
+  graticule(cam, .8);
+  land(cam, 1, .8, t);
+  const m = proj(cam, MEDINA);
+  glow(m[0], m[1], 260, 'rgba(255,210,130,.7)', 1);
+  DEST.forEach(([p, name, side], i) => {
+    const ta = 56.7 + i * .25, q = eio(seg(t, ta, ta + 1));
+    if (q <= 0) return;
+    const d = proj(cam, p), c = [(m[0] + d[0]) / 2, (m[1] + d[1]) / 2 - 90];
+    const pts = []; for (let k = 0; k <= 40; k++) { const s = k / 40; pts.push([(1 - s) * (1 - s) * m[0] + 2 * (1 - s) * s * c[0] + s * s * d[0], (1 - s) * (1 - s) * m[1] + 2 * (1 - s) * s * c[1] + s * s * d[1]]); }
+    g.save(); g.strokeStyle = '#ffd98a'; g.lineWidth = 3; g.lineCap = 'round'; g.shadowColor = '#ffbf5a'; g.shadowBlur = 16;
+    const h = strokePartial(pts, q); g.restore();
+    glow(h[0], h[1], 46, 'rgba(255,230,170,1)', q < 1 ? 1 : 0);
+    if (q >= 1) cityMark(cam, p, t, ss(ta + 1, ta + 1.4, t), name, side);
+  });
+  T('عهد الخلفاء الراشدين', 'ruqaa', 96, 960, 130, t, 56.7, null, { fill: 'gold', glow: 22, shine: true });
+  T('ومن هنا… أشرقت حضارةٌ أضاءت العالم', 'amiri', 56, 960, 985, t, 57.6, null, { glow: 14 });
+}
+const SCENES = [
+  [0, 5, sIntro], [5, 11, sJahiliyya], [11, 17, s570], [17, 24, s610], [24, 31, sMecca], [31, 38, sHijra],
+  [38, 43, sMedina], [43, 48, sBattles], [48, 52, sFath], [52, 56.5, sWada], [56.5, 60, sOutro],
+];
+
+/* ---------- global overlays ---------- */
+const VIGNETTE = (() => { const c = mk(W, H), x = c.getContext('2d'); const gr = x.createRadialGradient(W / 2, H / 2, H * .35, W / 2, H / 2, H * 1.05); gr.addColorStop(0, 'rgba(0,0,0,0)'); gr.addColorStop(1, 'rgba(0,0,0,.72)'); x.fillStyle = gr; x.fillRect(0, 0, W, H); return c; })();
+const NOISE = [0, 1, 2, 3, 4, 5].map(k => { const c = mk(256, 256), x = c.getContext('2d'), d = x.createImageData(256, 256), r = rng(100 + k); for (let i = 0; i < d.data.length; i += 4) { const v = r() * 255; d.data[i] = d.data[i + 1] = d.data[i + 2] = v; d.data[i + 3] = 255; } x.putImageData(d, 0, 0); return main.createPattern(c, 'repeat'); });
+const YK = [[11, 570], [16.8, 570], [17.6, 610], [24.6, 610], [25, 613], [26.4, 615], [27.8, 616], [29.2, 619], [31.2, 619], [31.8, 622], [43.4, 622], [43.8, 624], [44.4, 625], [45, 627], [45.6, 628], [48.1, 628], [48.6, 630], [52.1, 630], [52.6, 632], [60, 632]];
+function yearAt(t) { for (let i = 1; i < YK.length; i++) if (t <= YK[i][0]) return lerp(YK[i - 1][1], YK[i][1], eio(seg(t, YK[i - 1][0], YK[i][0]))); return 632; }
+function eraBar(t) {
+  const a = ss(11.2, 12.2, t) * (1 - ss(55.8, 56.6, t)); if (a <= 0) return;
+  g = main; const y = 1028, X = yr => 1560 - (yr - 570) / 62 * 1200;
+  g.save(); g.globalAlpha = a;
+  g.fillStyle = 'rgba(240,207,122,.25)'; g.fillRect(360, y - .5, 1200, 1);
+  const cur = yearAt(t), cx = X(cur);
+  const gr = g.createLinearGradient(1560, 0, cx, 0); gr.addColorStop(0, 'rgba(240,207,122,.2)'); gr.addColorStop(1, 'rgba(240,207,122,.95)');
+  g.fillStyle = gr; g.fillRect(cx, y - 1, 1560 - cx, 2);
+  for (const yr of [570, 610, 622, 632]) { g.fillStyle = cur >= yr - .01 ? '#f0cf7a' : 'rgba(240,207,122,.4)'; g.fillRect(X(yr) - 1, y - 7, 2, 14); drawTex(tex(ar(yr), 'kufi', 22, 400, 'rgba(244,233,210,.65)', 0), X(yr), y + 24, { alpha: 1 }); }
+  g.fillStyle = '#fff3d0'; g.shadowColor = '#ffcf7a'; g.shadowBlur = 16; g.beginPath(); g.arc(cx, y, 6, 0, TAU); g.fill();
+  g.restore();
+}
+const BOUNDS = SCENES.slice(1).map(s => s[0]);
+function render(t) {
+  t = clamp(t, 0, DUR);
+  main.globalCompositeOperation = 'source-over'; main.globalAlpha = 1; main.filter = 'none';
+  main.fillStyle = '#000'; main.fillRect(0, 0, W, H);
+  let li = 0;
+  for (const [a, b, fn] of SCENES) {
+    if (t < a - .45 || t > b + .45) continue;
+    const alpha = (a === 0 ? 1 : ss(a - .45, a + .35, t)) * (b === DUR ? 1 : 1 - ss(b - .35, b + .45, t));
+    if (alpha <= .002) continue;
+    const L = LAYERS[li++ % 2]; g = L.x;
+    g.setTransform(1, 0, 0, 1, 0, 0); g.globalAlpha = 1; g.globalCompositeOperation = 'source-over'; g.filter = 'none'; g.clearRect(0, 0, W, H);
+    fn(t);
+    main.globalAlpha = alpha; main.drawImage(L.c, 0, 0); main.globalAlpha = 1;
+  }
+  g = main;
+  for (const b of BOUNDS) { const k = Math.exp(-Math.pow((t - b) / .32, 2)); if (k > .01) { glow(lerp(1700, 300, seg(t, b - .6, b + .6)), 420, 900, 'rgba(255,170,90,.55)', k * .55); } }
+  eraBar(t);
+  main.drawImage(VIGNETTE, 0, 0);
+  main.save(); main.globalCompositeOperation = 'overlay'; main.globalAlpha = .085;
+  const f = Math.floor(t * 24); main.fillStyle = NOISE[f % 6]; main.translate((f * 97) % 256, (f * 57) % 256); main.fillRect(-256, -256, W + 512, H + 512); main.restore();
+  const fade = Math.max(1 - ss(0, .6, t), ss(59.2, 60, t));
+  if (fade > 0) { main.fillStyle = `rgba(0,0,0,${fade})`; main.fillRect(0, 0, W, H); }
+}
+
+/* ---------- boot / player ---------- */
+const fontsReady = Promise.all([
+  '700 80px "Aref Ruqaa"', '400 80px "Aref Ruqaa"', '700 80px "Amiri"', '400 80px "Amiri"', '400 40px "Reem Kufi"', '600 40px "Reem Kufi"', '700 40px "Reem Kufi"',
+].map(f => document.fonts.load(f, 'فجر الإسلام ٦٢٢م ﷺ'))).catch(() => {}).then(() => document.fonts.ready);
+window.__render = t => render(t);
+fontsReady.then(() => { render(0); window.__ready = true; });
+if (RENDER) return;
+
+const snd = document.getElementById('snd'), ui = document.getElementById('ui'), pp = document.getElementById('pp');
+const fill = document.getElementById('fill'), timeEl = document.getElementById('time'), bar = document.getElementById('bar');
+let playing = false, clock = 0, last = 0, hasAudio = true;
+snd.addEventListener('error', () => { hasAudio = false; });
+const fmt = s => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}`;
+function now() { return hasAudio && snd.readyState >= 2 && !snd.paused ? snd.currentTime : clock; }
+function setT(s) { clock = clamp(s, 0, DUR); try { snd.currentTime = clock; } catch (e) { } }
+function play() { if (clock >= DUR - .05) setT(0); playing = true; last = performance.now(); pp.textContent = '❚❚'; if (hasAudio) snd.play().catch(() => { hasAudio = false; }); }
+function pause() { playing = false; pp.textContent = '▶'; snd.pause(); }
+function frame(ts) {
+  if (playing) { const dt = (ts - last) / 1000; last = ts; const a = now(); clock = (hasAudio && !snd.paused) ? a : clock + dt; if (clock >= DUR) { clock = DUR; pause(); } }
+  render(clock); fill.style.width = (clock / DUR * 100) + '%'; timeEl.textContent = `${fmt(clock)} / ${fmt(DUR)}`;
+  requestAnimationFrame(frame);
+}
+document.getElementById('start').addEventListener('click', () => { document.getElementById('start').classList.add('hide'); fontsReady.then(() => { play(); requestAnimationFrame(frame); }); });
+pp.addEventListener('click', () => playing ? pause() : play());
+bar.addEventListener('click', e => { const r = bar.getBoundingClientRect(); setT((e.clientX - r.left) / r.width * DUR); last = performance.now(); });
+document.getElementById('fs').addEventListener('click', () => { document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen?.(); });
+document.addEventListener('keydown', e => { if (e.code === 'Space') { e.preventDefault(); playing ? pause() : play(); } if (e.code === 'ArrowLeft') setT(clock - 5); if (e.code === 'ArrowRight') setT(clock + 5); });
+let idleT; const wake = () => { ui.classList.remove('idle'); clearTimeout(idleT); idleT = setTimeout(() => playing && ui.classList.add('idle'), 2200); };
+['mousemove', 'touchstart', 'keydown'].forEach(ev => document.addEventListener(ev, wake, { passive: true }));
+})();
+</script>
+</body>
+</html>
