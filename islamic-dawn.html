@@ -550,7 +550,7 @@ function sFath(t) {
   sky([[0, '#0d0e26'], [.42, '#3a2446'], [.72, mix('#7a4038', '#c36a3a', b)], [1, mix('#c08048', '#f6c070', b)]]);
   rays(1000, 880, 50, 1300, .35 * b, t, 2.8);
   glow(1000, 860, lerp(500, 1100, b), 'rgba(255,190,100,.75)', .5 + .5 * b);
-  for (let i = 0; i < 3; i++) { const k = ((lt * .45 + i / 3) % 1); g.save(); g.globalCompositeOperation = 'lighter'; g.strokeStyle = `rgba(255,220,150,${(1 - k) * .35 * b})`; g.lineWidth = 3; g.beginPath(); g.ellipse(1000, 880, 120 + k * 1100, (120 + k * 1100) * .32, 0, 0, TAU); g.stroke(); g.restore(); }
+  for (let i = 0; i < 3; i++) { const k = (((lt * .45 + i / 3) % 1) + 1) % 1; g.save(); g.globalCompositeOperation = 'lighter'; g.strokeStyle = `rgba(255,220,150,${(1 - k) * .35 * b})`; g.lineWidth = 3; g.beginPath(); g.ellipse(1000, 880, 120 + k * 1100, (120 + k * 1100) * .32, 0, 0, TAU); g.stroke(); g.restore(); }
   withCam(1.04 - lt * .008, 960, 900, () => {
     mountains(R2, 860, 190, '#4a2a2c', '#1e1012', lt * 3, 'rgba(255,210,150,1)', .4);
     mountains(R1, 935, 120, '#1c0f10', '#0a0506', -lt * 6);
